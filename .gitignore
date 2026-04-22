@@ -1,0 +1,14 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+lib/fixtures/.auth/
+.env
+*.mp4
+
+tests/performance/results/
+perf/results/
+
+# Generated reports
+automation-report.html
+error-report.html

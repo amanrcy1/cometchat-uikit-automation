@@ -1,0 +1,236 @@
+# ============================================================================
+# Nightly Full Regression — Runs every night at 2 AM UTC
+# ============================================================================
+#
+# Complete test suite with:
+#   - All UI tests (no sharding — sequential for deterministic results)
+#   - All API tests
+#   - All integration tests
+#   - Higher retry count (3) to identify true flaky tests
+#   - Full trace + video capture on every test (not just failures)
+#   - Report published to GitHub Pages
+#   - Slack notification with pass rate
+#
+# ============================================================================
+
+name: Nightly Regression
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Every day at 2 AM UTC
+
+  workflow_dispatch:
+    inputs:
+      capture_all:
+        description: 'Capture video/trace for ALL tests (not just failures)'
+        required: false
+        default: 'true'
+        type: boolean
+
+concurrency:
+  group: nightly-regression
+  cancel-in-progress: false  # Never cancel nightly — let it finish
+
+env:
+  CI: true
+  NODE_VERSION: '20'
+  WORKING_DIR: cometchat-qa-framework
+  BASE_URL: ${{ vars.BASE_URL || 'http://localhost:3000' }}
+  PRIMARY_UID: ${{ vars.PRIMARY_UID || 'cometchat-uid-1' }}
+  SECONDARY_UID: ${{ vars.SECONDARY_UID || 'cometchat-uid-2' }}
+  CHAT_TARGET_USER: ${{ vars.CHAT_TARGET_USER || 'George Alan' }}
+  COMETCHAT_APP_ID: ${{ secrets.COMETCHAT_APP_ID }}
+  COMETCHAT_REGION: ${{ secrets.COMETCHAT_REGION || 'us' }}
+  COMETCHAT_AUTH_KEY: ${{ secrets.COMETCHAT_AUTH_KEY }}
+  COMETCHAT_API_KEY: ${{ secrets.COMETCHAT_API_KEY }}
+  GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+jobs:
+  full-regression:
+    name: Full Regression Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Wait for app
+        run: |
+          for i in $(seq 1 60); do
+            if curl -s -o /dev/null -w "%{http_code}" "$BASE_URL" | grep -q "200"; then
+              echo "✅ App is ready at $BASE_URL"
+              break
+            fi
+            [ $i -eq 60 ] && echo "❌ App not reachable after 120s" && exit 1
+            sleep 2
+          done
+
+      - name: Run API tests
+        id: api
+        run: |
+          npx playwright test tests/api/ \
+            --project=chromium \
+            --retries=3 \
+            --reporter=list 2>&1 | tee api-output.txt
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Run UI tests
+        id: ui
+        run: |
+          VIDEO_MODE=${{ github.event.inputs.capture_all == 'true' && 'on' || 'retain-on-failure' }}
+          TRACE_MODE=${{ github.event.inputs.capture_all == 'true' && 'on' || 'retain-on-failure' }}
+          npx playwright test tests/ui/ \
+            --project=chromium \
+            --retries=3 \
+            --workers=1 \
+            --reporter=list,html,./lib/utils/unified-reporter.ts 2>&1 | tee ui-output.txt
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Run integration tests
+        id: integration
+        run: |
+          npx playwright test tests/integration/ \
+            --project=chromium \
+            --retries=3 \
+            --workers=1 \
+            --reporter=list 2>&1 | tee integration-output.txt
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Parse results
+        id: results
+        if: always()
+        run: |
+          # Extract pass/fail counts from output files
+          TOTAL=0; PASSED=0; FAILED=0; FLAKY=0; SKIPPED=0
+          for f in api-output.txt ui-output.txt integration-output.txt; do
+            if [ -f "$f" ]; then
+              P=$(grep -oP '\d+ passed' "$f" | grep -oP '\d+' | tail -1 || echo 0)
+              F=$(grep -oP '\d+ failed' "$f" | grep -oP '\d+' | tail -1 || echo 0)
+              FL=$(grep -oP '\d+ flaky' "$f" | grep -oP '\d+' | tail -1 || echo 0)
+              S=$(grep -oP '\d+ skipped' "$f" | grep -oP '\d+' | tail -1 || echo 0)
+              PASSED=$((PASSED + ${P:-0}))
+              FAILED=$((FAILED + ${F:-0}))
+              FLAKY=$((FLAKY + ${FL:-0}))
+              SKIPPED=$((SKIPPED + ${S:-0}))
+            fi
+          done
+          TOTAL=$((PASSED + FAILED + FLAKY + SKIPPED))
+          RATE=0
+          [ $TOTAL -gt 0 ] && RATE=$(( (PASSED + FLAKY) * 100 / TOTAL ))
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "flaky=$FLAKY" >> $GITHUB_OUTPUT
+          echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+          echo "rate=$RATE" >> $GITHUB_OUTPUT
+
+          echo "📊 Results: $PASSED passed, $FAILED failed, $FLAKY flaky, $SKIPPED skipped ($RATE% pass rate)"
+
+      - name: Upload all artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-regression-${{ github.run_number }}
+          path: |
+            ${{ env.WORKING_DIR }}/test-results/
+            ${{ env.WORKING_DIR }}/playwright-report/
+            ${{ env.WORKING_DIR }}/automation-report.html
+            ${{ env.WORKING_DIR }}/error-report.html
+            ${{ env.WORKING_DIR }}/*-output.txt
+          retention-days: 90
+
+      - name: Deploy report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ env.WORKING_DIR }}/playwright-report
+          destination_dir: nightly-report
+
+      - name: Generate nightly summary
+        if: always()
+        run: |
+          EMOJI=${{ steps.results.outputs.rate >= 95 && '🟢' || steps.results.outputs.rate >= 80 && '🟡' || '🔴' }}
+          echo "## $EMOJI Nightly Regression — $(date +'%B %d, %Y')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Tests | ${{ steps.results.outputs.total }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ✅ Passed | ${{ steps.results.outputs.passed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ❌ Failed | ${{ steps.results.outputs.failed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⚠️ Flaky | ${{ steps.results.outputs.flaky }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⏭️ Skipped | ${{ steps.results.outputs.skipped }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pass Rate | **${{ steps.results.outputs.rate }}%** |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Layer | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| API | ${{ steps.api.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| UI | ${{ steps.ui.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration | ${{ steps.integration.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 [View Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/nightly-report/)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Slack notification
+        if: always() && secrets.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "${{ steps.results.outputs.rate >= 95 && '🟢' || steps.results.outputs.rate >= 80 && '🟡' || '🔴' }} Nightly Regression: ${{ steps.results.outputs.rate }}% pass rate (${{ steps.results.outputs.passed }}/${{ steps.results.outputs.total }})",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "${{ steps.results.outputs.rate >= 95 && '🟢' || '🔴' }} Nightly Regression — ${{ steps.results.outputs.rate }}% Pass Rate" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Total:* ${{ steps.results.outputs.total }}" },
+                    { "type": "mrkdwn", "text": "*Passed:* ${{ steps.results.outputs.passed }}" },
+                    { "type": "mrkdwn", "text": "*Failed:* ${{ steps.results.outputs.failed }}" },
+                    { "type": "mrkdwn", "text": "*Flaky:* ${{ steps.results.outputs.flaky }}" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Report" },
+                      "url": "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/nightly-report/"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }

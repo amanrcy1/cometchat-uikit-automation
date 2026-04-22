@@ -1,0 +1,470 @@
+Test Case ID,Module,Priority,Type,Title,Description,Preconditions,Test Steps,Expected Result,Status,Comments
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — GROUP PERMISSIONS (GROUPS) ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-GRP-001,Group Permissions,High,Functional,Owner can edit group details,"Verify owner can update group name/description via API",Owner user exists in group,"1. Create group as uid-1 (owner)
+2. PUT /groups/{guid} with onBehalfOf=owner to update name
+3. Verify status 200
+4. GET /groups/{guid} — verify updated name",Owner can edit group details — 200,Not Automated,
+TC-SCOPE-GRP-002,Group Permissions,High,Functional,Admin can edit group details,"Verify admin can update group name/description",Admin user added to group,"1. Add uid-2 as admin to group
+2. PUT /groups/{guid} with onBehalfOf=admin-uid to update name
+3. Verify status 200",Admin can edit group details — 200,Not Automated,
+TC-SCOPE-GRP-003,Group Permissions,High,Functional,Moderator can edit group details,"Verify moderator can update group details (permission=allow)",Moderator user added to group,"1. Add uid-3 as moderator to group
+2. PUT /groups/{guid} with onBehalfOf=moderator-uid
+3. Verify status 200",Moderator can edit group details — 200,Not Automated,
+TC-SCOPE-GRP-004,Group Permissions,High,Functional,Participant can edit group details,"Verify participant can edit group details (permission=allow for participant)",Participant user added to group,"1. Add uid-4 as participant to group
+2. PUT /groups/{guid} with onBehalfOf=participant-uid
+3. Verify status 200",Participant can edit group details — 200,Not Automated,
+TC-SCOPE-GRP-005,Group Permissions,High,Functional,Owner can leave group,"Verify owner can leave group via API",Owner in group,"1. POST /groups/{guid}/members/leave with onBehalfOf=owner
+2. Verify status 200 or appropriate response",Owner can leave group,Not Automated,Owner leaving may transfer ownership or delete group
+TC-SCOPE-GRP-006,Group Permissions,Medium,Functional,Admin can leave group,"Verify admin can leave group",Admin in group,"1. POST /groups/{guid}/members/leave with onBehalfOf=admin
+2. Verify status 200",Admin can leave group,Not Automated,
+TC-SCOPE-GRP-007,Group Permissions,Medium,Functional,Moderator can leave group,"Verify moderator can leave group (permission=allow)",Moderator in group,"1. POST /groups/{guid}/members/leave with onBehalfOf=moderator
+2. Verify status 200",Moderator can leave group,Not Automated,
+TC-SCOPE-GRP-008,Group Permissions,Medium,Functional,Participant can leave group,"Verify participant can leave group (permission=allow)",Participant in group,"1. POST /groups/{guid}/members/leave with onBehalfOf=participant
+2. Verify status 200",Participant can leave group,Not Automated,
+TC-SCOPE-GRP-009,Group Permissions,Medium,Functional,Owner can load group list,"Verify owner can list groups",Owner user exists,"1. GET /groups with onBehalfOf=owner
+2. Verify status 200 with array",Owner can load groups,Not Automated,
+TC-SCOPE-GRP-010,Group Permissions,Medium,Functional,Participant can load group list,"Verify participant can list groups (permission=allow)",Participant user exists,"1. GET /groups with onBehalfOf=participant
+2. Verify status 200 with array",Participant can load groups,Not Automated,
+TC-SCOPE-GRP-011,Group Permissions,Low,Edge Case,Non-member cannot edit group details,"Verify user not in group cannot edit it",User not a member of group,"1. PUT /groups/{guid} with onBehalfOf=non-member-uid
+2. Verify status 403 or error",Non-member cannot edit group,Not Automated,
+TC-SCOPE-GRP-012,Group Permissions,Low,Edge Case,Owner can create new group,"Verify any authenticated user can create groups (permission=allow for all)",Authenticated user,"1. POST /groups with onBehalfOf=any-uid
+2. Verify status 200",Group creation allowed for all roles,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — MEMBER MANAGEMENT ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-MEM-001,Member Management,High,Functional,Owner can add members to group,"Verify owner can add new members",Owner in group,"1. POST /groups/{guid}/members with onBehalfOf=owner adding uid-new as participant
+2. Verify status 200
+3. GET /groups/{guid}/members — verify new member listed",Owner can add members — 200,Not Automated,
+TC-SCOPE-MEM-002,Member Management,High,Functional,Admin can add members to group,"Verify admin can add new members (permission=allow)",Admin in group,"1. POST /groups/{guid}/members with onBehalfOf=admin adding uid-new
+2. Verify status 200",Admin can add members — 200,Not Automated,
+TC-SCOPE-MEM-003,Member Management,High,Functional,Moderator can add members to group,"Verify moderator can add members (permission=allow)",Moderator in group,"1. POST /groups/{guid}/members with onBehalfOf=moderator adding uid-new
+2. Verify status 200",Moderator can add members — 200,Not Automated,
+TC-SCOPE-MEM-004,Member Management,High,Negative,Participant CANNOT add members to group,"Verify participant is denied member addition (permission=deny)",Participant in group,"1. POST /groups/{guid}/members with onBehalfOf=participant adding uid-new
+2. Verify status 403 or error response
+3. GET /groups/{guid}/members — verify new member NOT listed",Participant denied adding members — 403,Not Automated,Critical permission boundary
+TC-SCOPE-MEM-005,Member Management,High,Functional,Owner can remove/kick members,"Verify owner can kick any member",Owner in group with members,"1. DELETE /groups/{guid}/members/{participant-uid} with onBehalfOf=owner
+2. Verify status 200
+3. GET /groups/{guid}/members — verify member removed",Owner can kick members — 200,Not Automated,
+TC-SCOPE-MEM-006,Member Management,High,Functional,Admin can remove/kick members,"Verify admin can kick members (permission=allow)",Admin in group with participant,"1. DELETE /groups/{guid}/members/{participant-uid} with onBehalfOf=admin
+2. Verify status 200",Admin can kick members — 200,Not Automated,
+TC-SCOPE-MEM-007,Member Management,High,Functional,Moderator can remove/kick members,"Verify moderator can kick members (permission=allow)",Moderator in group with participant,"1. DELETE /groups/{guid}/members/{participant-uid} with onBehalfOf=moderator
+2. Verify status 200",Moderator can kick members — 200,Not Automated,
+TC-SCOPE-MEM-008,Member Management,High,Negative,Participant CANNOT remove/kick members,"Verify participant is denied member removal (permission=deny)",Participant in group,"1. DELETE /groups/{guid}/members/{other-uid} with onBehalfOf=participant
+2. Verify status 403 or error",Participant denied kicking members — 403,Not Automated,Critical permission boundary
+TC-SCOPE-MEM-009,Member Management,High,Functional,Owner can list all members,"Verify owner can list group members",Owner in group,"1. GET /groups/{guid}/members with onBehalfOf=owner
+2. Verify status 200 with array of members",Owner can list members — 200,Not Automated,
+TC-SCOPE-MEM-010,Member Management,Medium,Functional,Participant can list members,"Verify participant can list members (permission=allow)",Participant in group,"1. GET /groups/{guid}/members with onBehalfOf=participant
+2. Verify status 200 with array",Participant can list members — 200,Not Automated,
+TC-SCOPE-MEM-011,Member Management,High,Functional,Owner can ban a member,"Verify owner can ban members from group",Owner in group with participant,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=owner banning participant-uid
+2. Verify status 200
+3. GET /groups/{guid}/bannedmembers — verify banned member listed",Owner can ban members — 200,Not Automated,
+TC-SCOPE-MEM-012,Member Management,High,Functional,Admin can ban a member,"Verify admin can ban members (permission=allow)",Admin in group,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=admin
+2. Verify status 200",Admin can ban members — 200,Not Automated,
+TC-SCOPE-MEM-013,Member Management,High,Functional,Moderator can ban a member,"Verify moderator can ban members (permission=allow)",Moderator in group,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=moderator
+2. Verify status 200",Moderator can ban members — 200,Not Automated,
+TC-SCOPE-MEM-014,Member Management,High,Negative,Participant CANNOT ban a member,"Verify participant is denied banning (permission=deny)",Participant in group,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=participant
+2. Verify status 403 or error",Participant denied banning — 403,Not Automated,Critical permission boundary
+TC-SCOPE-MEM-015,Member Management,High,Functional,Owner can unban a member,"Verify owner can unban previously banned member",Owner in group with banned member,"1. DELETE /groups/{guid}/bannedmembers/{banned-uid} with onBehalfOf=owner
+2. Verify status 200
+3. GET /groups/{guid}/bannedmembers — verify member no longer banned",Owner can unban members — 200,Not Automated,
+TC-SCOPE-MEM-016,Member Management,Medium,Functional,Admin can unban a member,"Verify admin can unban members",Admin in group with banned member,"1. DELETE /groups/{guid}/bannedmembers/{banned-uid} with onBehalfOf=admin
+2. Verify status 200",Admin can unban members — 200,Not Automated,
+TC-SCOPE-MEM-017,Member Management,Medium,Functional,Moderator can unban a member,"Verify moderator can unban members (permission=allow)",Moderator in group with banned member,"1. DELETE /groups/{guid}/bannedmembers/{banned-uid} with onBehalfOf=moderator
+2. Verify status 200",Moderator can unban members — 200,Not Automated,
+TC-SCOPE-MEM-018,Member Management,High,Negative,Participant CANNOT unban a member,"Verify participant is denied unbanning (permission=deny)",Participant in group,"1. DELETE /groups/{guid}/bannedmembers/{banned-uid} with onBehalfOf=participant
+2. Verify status 403 or error",Participant denied unbanning — 403,Not Automated,Critical permission boundary
+TC-SCOPE-MEM-019,Member Management,Medium,Functional,Owner can list banned members,"Verify owner can view banned members list",Owner in group,"1. GET /groups/{guid}/bannedmembers with onBehalfOf=owner
+2. Verify status 200",Owner can list banned members — 200,Not Automated,
+TC-SCOPE-MEM-020,Member Management,Medium,Functional,Admin can list banned members,"Verify admin can view banned members list",Admin in group,"1. GET /groups/{guid}/bannedmembers with onBehalfOf=admin
+2. Verify status 200",Admin can list banned members — 200,Not Automated,
+TC-SCOPE-MEM-021,Member Management,Medium,Functional,Moderator can list banned members,"Verify moderator can view banned members (permission=allow)",Moderator in group,"1. GET /groups/{guid}/bannedmembers with onBehalfOf=moderator
+2. Verify status 200",Moderator can list banned members — 200,Not Automated,
+TC-SCOPE-MEM-022,Member Management,High,Negative,Participant CANNOT list banned members,"Verify participant is denied viewing banned list (permission=deny)",Participant in group,"1. GET /groups/{guid}/bannedmembers with onBehalfOf=participant
+2. Verify status 403 or error",Participant denied listing banned — 403,Not Automated,Critical permission boundary
+TC-SCOPE-MEM-023,Member Management,High,Functional,Owner can upgrade member scope,"Verify owner can promote participant to moderator/admin",Owner in group with participant,"1. PUT /groups/{guid}/members/{participant-uid} with onBehalfOf=owner setting scope=moderator
+2. Verify status 200
+3. GET /groups/{guid}/members — verify scope changed",Owner can upgrade member scope — 200,Not Automated,
+TC-SCOPE-MEM-024,Member Management,Medium,Functional,Admin can upgrade member scope,"Verify admin can promote members (permission=allow)",Admin in group,"1. PUT /groups/{guid}/members/{participant-uid} with onBehalfOf=admin setting scope=moderator
+2. Verify status 200",Admin can upgrade scope — 200,Not Automated,
+TC-SCOPE-MEM-025,Member Management,Medium,Functional,Moderator can upgrade member scope,"Verify moderator can promote members (permission=allow)",Moderator in group,"1. PUT /groups/{guid}/members/{participant-uid} with onBehalfOf=moderator setting scope=moderator
+2. Verify status 200 or appropriate response",Moderator can upgrade scope — 200,Not Automated,May be limited by hierarchy
+TC-SCOPE-MEM-026,Member Management,High,Negative,Participant CANNOT upgrade member scope,"Verify participant is denied scope upgrade (permission=deny)",Participant in group,"1. PUT /groups/{guid}/members/{other-uid} with onBehalfOf=participant setting scope=admin
+2. Verify status 403 or error",Participant denied upgrading scope — 403,Not Automated,Critical permission boundary
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — KICK SCOPE FILTER (HIERARCHY) ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-KICK-001,Kick Scope Filter,High,Functional,Owner can kick admin,"Verify owner can kick an admin-scoped member",Owner in group with admin member,"1. Add uid-2 as admin
+2. DELETE /groups/{guid}/members/{admin-uid} with onBehalfOf=owner
+3. Verify status 200
+4. GET /groups/{guid}/members — verify admin removed",Owner can kick admin — 200,Not Automated,
+TC-SCOPE-KICK-002,Kick Scope Filter,High,Functional,Owner can kick moderator,"Verify owner can kick a moderator-scoped member",Owner in group with moderator,"1. Add uid-3 as moderator
+2. DELETE /groups/{guid}/members/{moderator-uid} with onBehalfOf=owner
+3. Verify status 200",Owner can kick moderator — 200,Not Automated,
+TC-SCOPE-KICK-003,Kick Scope Filter,High,Functional,Owner can kick participant,"Verify owner can kick a participant",Owner in group with participant,"1. Add uid-4 as participant
+2. DELETE /groups/{guid}/members/{participant-uid} with onBehalfOf=owner
+3. Verify status 200",Owner can kick participant — 200,Not Automated,
+TC-SCOPE-KICK-004,Kick Scope Filter,High,Functional,Admin can kick moderator,"Verify admin can kick moderator (lower scope)",Admin in group with moderator,"1. DELETE /groups/{guid}/members/{moderator-uid} with onBehalfOf=admin
+2. Verify status 200",Admin can kick moderator — 200,Not Automated,
+TC-SCOPE-KICK-005,Kick Scope Filter,High,Functional,Admin can kick participant,"Verify admin can kick participant (lower scope)",Admin in group with participant,"1. DELETE /groups/{guid}/members/{participant-uid} with onBehalfOf=admin
+2. Verify status 200",Admin can kick participant — 200,Not Automated,
+TC-SCOPE-KICK-006,Kick Scope Filter,High,Negative,Admin CANNOT kick owner,"Verify admin cannot kick the group owner (higher scope)",Admin in group with owner,"1. DELETE /groups/{guid}/members/{owner-uid} with onBehalfOf=admin
+2. Verify status 403 or error",Admin denied kicking owner — 403,Not Automated,Hierarchy enforcement
+TC-SCOPE-KICK-007,Kick Scope Filter,High,Negative,Admin CANNOT kick another admin,"Verify admin cannot kick equal-scope admin",Two admins in group,"1. Add uid-2 and uid-3 both as admin
+2. DELETE /groups/{guid}/members/{admin2-uid} with onBehalfOf=admin1
+3. Verify status 403 or error",Admin denied kicking equal admin — 403,Not Automated,Equal scope restriction
+TC-SCOPE-KICK-008,Kick Scope Filter,High,Functional,Moderator can kick participant,"Verify moderator can kick participant (lower scope)",Moderator in group with participant,"1. DELETE /groups/{guid}/members/{participant-uid} with onBehalfOf=moderator
+2. Verify status 200",Moderator can kick participant — 200,Not Automated,
+TC-SCOPE-KICK-009,Kick Scope Filter,High,Negative,Moderator CANNOT kick admin,"Verify moderator cannot kick admin (higher scope)",Moderator in group with admin,"1. DELETE /groups/{guid}/members/{admin-uid} with onBehalfOf=moderator
+2. Verify status 403 or error",Moderator denied kicking admin — 403,Not Automated,Hierarchy enforcement
+TC-SCOPE-KICK-010,Kick Scope Filter,High,Negative,Moderator CANNOT kick owner,"Verify moderator cannot kick owner (highest scope)",Moderator in group with owner,"1. DELETE /groups/{guid}/members/{owner-uid} with onBehalfOf=moderator
+2. Verify status 403 or error",Moderator denied kicking owner — 403,Not Automated,Hierarchy enforcement
+TC-SCOPE-KICK-011,Kick Scope Filter,Medium,Negative,Moderator CANNOT kick another moderator,"Verify moderator cannot kick equal-scope moderator",Two moderators in group,"1. Add uid-3 and uid-4 both as moderator
+2. DELETE /groups/{guid}/members/{mod2-uid} with onBehalfOf=mod1
+3. Verify status 403 or error",Moderator denied kicking equal moderator — 403,Not Automated,Equal scope restriction
+TC-SCOPE-KICK-012,Kick Scope Filter,High,Negative,Participant CANNOT kick anyone,"Verify participant cannot kick any member (permission=deny)",Participant in group,"1. DELETE /groups/{guid}/members/{any-uid} with onBehalfOf=participant
+2. Verify status 403 or error",Participant denied kicking — 403,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — BAN SCOPE FILTER (HIERARCHY) ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-BAN-001,Ban Scope Filter,High,Functional,Owner can ban admin,"Verify owner can ban an admin member",Owner in group with admin,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=owner banning admin-uid
+2. Verify status 200",Owner can ban admin — 200,Not Automated,
+TC-SCOPE-BAN-002,Ban Scope Filter,High,Functional,Owner can ban moderator,"Verify owner can ban a moderator",Owner in group with moderator,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=owner banning moderator-uid
+2. Verify status 200",Owner can ban moderator — 200,Not Automated,
+TC-SCOPE-BAN-003,Ban Scope Filter,High,Functional,Owner can ban participant,"Verify owner can ban a participant",Owner in group with participant,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=owner banning participant-uid
+2. Verify status 200",Owner can ban participant — 200,Not Automated,
+TC-SCOPE-BAN-004,Ban Scope Filter,High,Functional,Admin can ban moderator,"Verify admin can ban moderator (lower scope)",Admin in group with moderator,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=admin banning moderator-uid
+2. Verify status 200",Admin can ban moderator — 200,Not Automated,
+TC-SCOPE-BAN-005,Ban Scope Filter,High,Functional,Admin can ban participant,"Verify admin can ban participant (lower scope)",Admin in group with participant,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=admin banning participant-uid
+2. Verify status 200",Admin can ban participant — 200,Not Automated,
+TC-SCOPE-BAN-006,Ban Scope Filter,High,Negative,Admin CANNOT ban owner,"Verify admin cannot ban the group owner",Admin in group,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=admin banning owner-uid
+2. Verify status 403 or error",Admin denied banning owner — 403,Not Automated,
+TC-SCOPE-BAN-007,Ban Scope Filter,High,Negative,Admin CANNOT ban another admin,"Verify admin cannot ban equal-scope admin",Two admins in group,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=admin1 banning admin2-uid
+2. Verify status 403 or error",Admin denied banning equal admin — 403,Not Automated,
+TC-SCOPE-BAN-008,Ban Scope Filter,High,Functional,Moderator can ban participant,"Verify moderator can ban participant (lower scope)",Moderator in group with participant,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=moderator banning participant-uid
+2. Verify status 200",Moderator can ban participant — 200,Not Automated,
+TC-SCOPE-BAN-009,Ban Scope Filter,High,Negative,Moderator CANNOT ban admin,"Verify moderator cannot ban admin (higher scope)",Moderator in group with admin,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=moderator banning admin-uid
+2. Verify status 403 or error",Moderator denied banning admin — 403,Not Automated,
+TC-SCOPE-BAN-010,Ban Scope Filter,High,Negative,Moderator CANNOT ban owner,"Verify moderator cannot ban owner",Moderator in group,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=moderator banning owner-uid
+2. Verify status 403 or error",Moderator denied banning owner — 403,Not Automated,
+TC-SCOPE-BAN-011,Ban Scope Filter,Medium,Negative,Moderator CANNOT ban another moderator,"Verify moderator cannot ban equal-scope moderator",Two moderators in group,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=mod1 banning mod2-uid
+2. Verify status 403 or error",Moderator denied banning equal moderator — 403,Not Automated,
+TC-SCOPE-BAN-012,Ban Scope Filter,High,Negative,Participant CANNOT ban anyone,"Verify participant cannot ban any member (permission=deny)",Participant in group,"1. POST /groups/{guid}/bannedmembers with onBehalfOf=participant banning any-uid
+2. Verify status 403 or error",Participant denied banning — 403,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — SCOPE UPGRADE/DOWNGRADE HIERARCHY ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-UPG-001,Scope Upgrade,High,Functional,Owner can promote participant to moderator,"Verify owner can change participant scope to moderator",Owner in group with participant,"1. PUT /groups/{guid}/members/{participant-uid} with onBehalfOf=owner scope=moderator
+2. Verify status 200
+3. GET /groups/{guid}/members — verify scope=moderator",Owner promotes participant to moderator — 200,Not Automated,
+TC-SCOPE-UPG-002,Scope Upgrade,High,Functional,Owner can promote participant to admin,"Verify owner can change participant scope to admin",Owner in group with participant,"1. PUT /groups/{guid}/members/{participant-uid} with onBehalfOf=owner scope=admin
+2. Verify status 200
+3. GET /groups/{guid}/members — verify scope=admin",Owner promotes participant to admin — 200,Not Automated,
+TC-SCOPE-UPG-003,Scope Upgrade,High,Functional,Owner can promote moderator to admin,"Verify owner can change moderator scope to admin",Owner in group with moderator,"1. PUT /groups/{guid}/members/{moderator-uid} with onBehalfOf=owner scope=admin
+2. Verify status 200",Owner promotes moderator to admin — 200,Not Automated,
+TC-SCOPE-UPG-004,Scope Upgrade,High,Functional,Owner can demote admin to moderator,"Verify owner can downgrade admin to moderator",Owner in group with admin,"1. PUT /groups/{guid}/members/{admin-uid} with onBehalfOf=owner scope=moderator
+2. Verify status 200",Owner demotes admin to moderator — 200,Not Automated,
+TC-SCOPE-UPG-005,Scope Upgrade,High,Functional,Owner can demote admin to participant,"Verify owner can downgrade admin to participant",Owner in group with admin,"1. PUT /groups/{guid}/members/{admin-uid} with onBehalfOf=owner scope=participant
+2. Verify status 200",Owner demotes admin to participant — 200,Not Automated,
+TC-SCOPE-UPG-006,Scope Upgrade,High,Functional,Owner can demote moderator to participant,"Verify owner can downgrade moderator to participant",Owner in group with moderator,"1. PUT /groups/{guid}/members/{moderator-uid} with onBehalfOf=owner scope=participant
+2. Verify status 200",Owner demotes moderator to participant — 200,Not Automated,
+TC-SCOPE-UPG-007,Scope Upgrade,Medium,Functional,Admin can promote participant to moderator,"Verify admin can promote participant",Admin in group with participant,"1. PUT /groups/{guid}/members/{participant-uid} with onBehalfOf=admin scope=moderator
+2. Verify status 200",Admin promotes participant to moderator — 200,Not Automated,
+TC-SCOPE-UPG-008,Scope Upgrade,Medium,Negative,Admin CANNOT promote to admin (equal scope),"Verify admin cannot promote someone to their own level",Admin in group with participant,"1. PUT /groups/{guid}/members/{participant-uid} with onBehalfOf=admin scope=admin
+2. Verify status 403 or error",Admin denied promoting to admin — 403,Not Automated,Cannot promote to equal/higher scope
+TC-SCOPE-UPG-009,Scope Upgrade,High,Negative,Admin CANNOT demote owner,"Verify admin cannot change owner scope",Admin in group,"1. PUT /groups/{guid}/members/{owner-uid} with onBehalfOf=admin scope=participant
+2. Verify status 403 or error",Admin denied demoting owner — 403,Not Automated,
+TC-SCOPE-UPG-010,Scope Upgrade,Medium,Negative,Admin CANNOT demote another admin,"Verify admin cannot demote equal-scope admin",Two admins in group,"1. PUT /groups/{guid}/members/{admin2-uid} with onBehalfOf=admin1 scope=participant
+2. Verify status 403 or error",Admin denied demoting equal admin — 403,Not Automated,
+TC-SCOPE-UPG-011,Scope Upgrade,High,Negative,Moderator CANNOT promote to admin,"Verify moderator cannot promote anyone to admin (higher than self)",Moderator in group,"1. PUT /groups/{guid}/members/{participant-uid} with onBehalfOf=moderator scope=admin
+2. Verify status 403 or error",Moderator denied promoting to admin — 403,Not Automated,
+TC-SCOPE-UPG-012,Scope Upgrade,High,Negative,Participant CANNOT upgrade any member,"Verify participant is denied all scope changes (permission=deny)",Participant in group,"1. PUT /groups/{guid}/members/{other-uid} with onBehalfOf=participant scope=admin
+2. Verify status 403 or error",Participant denied scope changes — 403,Not Automated,
+TC-SCOPE-UPG-013,Scope Upgrade,Medium,Negative,Participant CANNOT promote self,"Verify participant cannot self-promote to admin/moderator",Participant in group,"1. PUT /groups/{guid}/members/{self-uid} with onBehalfOf=participant scope=admin
+2. Verify status 403 or error",Participant denied self-promotion — 403,Not Automated,Privilege escalation prevention
+TC-SCOPE-UPG-014,Scope Upgrade,Medium,Negative,Moderator CANNOT promote self to admin,"Verify moderator cannot self-promote",Moderator in group,"1. PUT /groups/{guid}/members/{self-uid} with onBehalfOf=moderator scope=admin
+2. Verify status 403 or error",Moderator denied self-promotion — 403,Not Automated,Privilege escalation prevention
+TC-SCOPE-UPG-015,Scope Upgrade,Medium,Negative,Admin CANNOT promote self to owner,"Verify admin cannot self-promote to owner",Admin in group,"1. PUT /groups/{guid}/members/{self-uid} with onBehalfOf=admin scope=owner
+2. Verify status 403 or error",Admin denied self-promotion to owner — 403,Not Automated,Privilege escalation prevention
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — MESSAGE PERMISSIONS ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-MSG-001,Message Permissions,High,Functional,Owner can send messages in group,"Verify owner can send text messages",Owner in group,"1. POST /messages with onBehalfOf=owner receiver=guid receiverType=group type=text
+2. Verify status 200
+3. Verify message ID in response",Owner can send messages — 200,Not Automated,
+TC-SCOPE-MSG-002,Message Permissions,High,Functional,Admin can send messages in group,"Verify admin can send messages",Admin in group,"1. POST /messages with onBehalfOf=admin
+2. Verify status 200",Admin can send messages — 200,Not Automated,
+TC-SCOPE-MSG-003,Message Permissions,High,Functional,Moderator can send messages in group,"Verify moderator can send messages (permission=allow)",Moderator in group,"1. POST /messages with onBehalfOf=moderator
+2. Verify status 200",Moderator can send messages — 200,Not Automated,
+TC-SCOPE-MSG-004,Message Permissions,High,Functional,Participant can send messages in group,"Verify participant can send messages (permission=allow)",Participant in group,"1. POST /messages with onBehalfOf=participant
+2. Verify status 200",Participant can send messages — 200,Not Automated,
+TC-SCOPE-MSG-005,Message Permissions,High,Functional,Owner can edit own messages,"Verify owner can edit their own messages",Owner sent a message,"1. Send message as owner
+2. PUT /messages/{msgId} with onBehalfOf=owner with updated text
+3. Verify status 200",Owner can edit own messages — 200,Not Automated,
+TC-SCOPE-MSG-006,Message Permissions,High,Functional,Admin can edit own messages,"Verify admin can edit their own messages",Admin sent a message,"1. Send message as admin
+2. PUT /messages/{msgId} with onBehalfOf=admin
+3. Verify status 200",Admin can edit own messages — 200,Not Automated,
+TC-SCOPE-MSG-007,Message Permissions,High,Functional,Moderator can edit own messages,"Verify moderator can edit own messages (permission=allow)",Moderator sent a message,"1. Send message as moderator
+2. PUT /messages/{msgId} with onBehalfOf=moderator
+3. Verify status 200",Moderator can edit own messages — 200,Not Automated,
+TC-SCOPE-MSG-008,Message Permissions,High,Functional,Participant can edit own messages,"Verify participant can edit own messages (permission=allow)",Participant sent a message,"1. Send message as participant
+2. PUT /messages/{msgId} with onBehalfOf=participant
+3. Verify status 200",Participant can edit own messages — 200,Not Automated,
+TC-SCOPE-MSG-009,Message Permissions,High,Functional,Owner can delete any message,"Verify owner can delete messages from any member",Owner in group with messages from others,"1. Send message as participant
+2. DELETE /messages/{msgId} with onBehalfOf=owner
+3. Verify status 200",Owner can delete any message — 200,Not Automated,
+TC-SCOPE-MSG-010,Message Permissions,High,Functional,Admin can delete messages,"Verify admin can delete messages (permission=allow)",Admin in group,"1. DELETE /messages/{msgId} with onBehalfOf=admin
+2. Verify status 200",Admin can delete messages — 200,Not Automated,
+TC-SCOPE-MSG-011,Message Permissions,High,Functional,Moderator can delete messages,"Verify moderator can delete messages (permission=allow)",Moderator in group,"1. DELETE /messages/{msgId} with onBehalfOf=moderator
+2. Verify status 200",Moderator can delete messages — 200,Not Automated,
+TC-SCOPE-MSG-012,Message Permissions,High,Functional,Participant can delete own messages,"Verify participant can delete their own messages (permission=allow)",Participant sent a message,"1. Send message as participant
+2. DELETE /messages/{msgId} with onBehalfOf=participant
+3. Verify status 200",Participant can delete own messages — 200,Not Automated,
+TC-SCOPE-MSG-013,Message Permissions,Medium,Negative,Participant CANNOT delete other members messages,"Verify participant cannot delete messages sent by others",Participant in group with others messages,"1. Send message as admin
+2. DELETE /messages/{msgId} with onBehalfOf=participant
+3. Verify status 403 or error",Participant denied deleting others messages — 403,Not Automated,
+TC-SCOPE-MSG-014,Message Permissions,Medium,Negative,Participant CANNOT edit other members messages,"Verify participant cannot edit messages sent by others",Participant in group,"1. Send message as admin
+2. PUT /messages/{msgId} with onBehalfOf=participant
+3. Verify status 403 or error",Participant denied editing others messages — 403,Not Automated,
+TC-SCOPE-MSG-015,Message Permissions,Medium,Functional,All roles can view message history,"Verify all roles can fetch message history (permission=allow for all)",All roles in group,"1. GET /groups/{guid}/messages with onBehalfOf=owner — verify 200
+2. GET /groups/{guid}/messages with onBehalfOf=admin — verify 200
+3. GET /groups/{guid}/messages with onBehalfOf=moderator — verify 200
+4. GET /groups/{guid}/messages with onBehalfOf=participant — verify 200",All roles can view history — 200,Not Automated,
+TC-SCOPE-MSG-016,Message Permissions,Medium,Functional,Non-member CANNOT send messages to group,"Verify non-member is denied sending messages",User not in group,"1. POST /messages with onBehalfOf=non-member receiver=guid
+2. Verify status 403 or error",Non-member denied sending — 403,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — THREAD PERMISSIONS ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-THR-001,Thread Permissions,High,Functional,Owner can send messages in threads,"Verify owner can send thread replies",Owner in group with threaded message,"1. POST /messages with onBehalfOf=owner parentMessageId={id} receiverType=group
+2. Verify status 200",Owner can send in threads — 200,Not Automated,
+TC-SCOPE-THR-002,Thread Permissions,High,Functional,Admin can send messages in threads,"Verify admin can send thread replies",Admin in group,"1. POST /messages with onBehalfOf=admin parentMessageId={id}
+2. Verify status 200",Admin can send in threads — 200,Not Automated,
+TC-SCOPE-THR-003,Thread Permissions,High,Functional,Moderator can send messages in threads,"Verify moderator can send thread replies (permission=allow)",Moderator in group,"1. POST /messages with onBehalfOf=moderator parentMessageId={id}
+2. Verify status 200",Moderator can send in threads — 200,Not Automated,
+TC-SCOPE-THR-004,Thread Permissions,High,Functional,Participant can send messages in threads,"Verify participant can send thread replies (permission=allow)",Participant in group,"1. POST /messages with onBehalfOf=participant parentMessageId={id}
+2. Verify status 200",Participant can send in threads — 200,Not Automated,
+TC-SCOPE-THR-005,Thread Permissions,Medium,Functional,Owner can edit thread messages,"Verify owner can edit messages in threads",Owner sent thread message,"1. PUT /messages/{threadMsgId} with onBehalfOf=owner
+2. Verify status 200",Owner can edit thread messages — 200,Not Automated,
+TC-SCOPE-THR-006,Thread Permissions,Medium,Functional,Participant can edit own thread messages,"Verify participant can edit own thread messages (permission=allow)",Participant sent thread message,"1. PUT /messages/{threadMsgId} with onBehalfOf=participant
+2. Verify status 200",Participant can edit own thread messages — 200,Not Automated,
+TC-SCOPE-THR-007,Thread Permissions,Medium,Functional,Owner can delete thread messages,"Verify owner can delete any thread message",Owner in group with thread messages,"1. DELETE /messages/{threadMsgId} with onBehalfOf=owner
+2. Verify status 200",Owner can delete thread messages — 200,Not Automated,
+TC-SCOPE-THR-008,Thread Permissions,Medium,Functional,Participant can delete own thread messages,"Verify participant can delete own thread messages (permission=allow)",Participant sent thread message,"1. DELETE /messages/{threadMsgId} with onBehalfOf=participant
+2. Verify status 200",Participant can delete own thread messages — 200,Not Automated,
+TC-SCOPE-THR-009,Thread Permissions,Medium,Negative,Participant CANNOT delete others thread messages,"Verify participant cannot delete thread messages from others",Participant in group,"1. Send thread message as admin
+2. DELETE /messages/{threadMsgId} with onBehalfOf=participant
+3. Verify status 403 or error",Participant denied deleting others thread messages — 403,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — REACTION PERMISSIONS ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-RXN-001,Reaction Permissions,High,Functional,Owner can react to messages,"Verify owner can add emoji reactions",Owner in group with messages,"1. POST /messages/{msgId}/reactions with onBehalfOf=owner emoji=👍
+2. Verify status 200",Owner can react — 200,Not Automated,
+TC-SCOPE-RXN-002,Reaction Permissions,High,Functional,Admin can react to messages,"Verify admin can add reactions",Admin in group,"1. POST /messages/{msgId}/reactions with onBehalfOf=admin
+2. Verify status 200",Admin can react — 200,Not Automated,
+TC-SCOPE-RXN-003,Reaction Permissions,High,Functional,Moderator can react to messages,"Verify moderator can react (permission=allow)",Moderator in group,"1. POST /messages/{msgId}/reactions with onBehalfOf=moderator
+2. Verify status 200",Moderator can react — 200,Not Automated,
+TC-SCOPE-RXN-004,Reaction Permissions,High,Functional,Participant can react to messages,"Verify participant can react (permission=allow)",Participant in group,"1. POST /messages/{msgId}/reactions with onBehalfOf=participant
+2. Verify status 200",Participant can react — 200,Not Automated,
+TC-SCOPE-RXN-005,Reaction Permissions,Medium,Functional,Owner can react to thread messages,"Verify owner can react in threads (thread liking=allow)",Owner in group with thread messages,"1. POST /messages/{threadMsgId}/reactions with onBehalfOf=owner
+2. Verify status 200",Owner can react in threads — 200,Not Automated,
+TC-SCOPE-RXN-006,Reaction Permissions,Medium,Functional,Participant can react to thread messages,"Verify participant can react in threads (thread liking=allow)",Participant in group,"1. POST /messages/{threadMsgId}/reactions with onBehalfOf=participant
+2. Verify status 200",Participant can react in threads — 200,Not Automated,
+TC-SCOPE-RXN-007,Reaction Permissions,Low,Functional,Non-member CANNOT react to group messages,"Verify non-member cannot react",User not in group,"1. POST /messages/{msgId}/reactions with onBehalfOf=non-member
+2. Verify status 403 or error",Non-member denied reacting — 403,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — REPORTING PERMISSIONS ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-RPT-001,Reporting Permissions,High,Functional,Owner can report messages,"Verify owner can report a message",Owner in group with messages,"1. POST /messages/{msgId}/report with onBehalfOf=owner
+2. Verify status 200",Owner can report — 200,Not Automated,
+TC-SCOPE-RPT-002,Reporting Permissions,High,Functional,Admin can report messages,"Verify admin can report messages",Admin in group,"1. POST /messages/{msgId}/report with onBehalfOf=admin
+2. Verify status 200",Admin can report — 200,Not Automated,
+TC-SCOPE-RPT-003,Reporting Permissions,High,Functional,Moderator can report messages,"Verify moderator can report (permission=allow)",Moderator in group,"1. POST /messages/{msgId}/report with onBehalfOf=moderator
+2. Verify status 200",Moderator can report — 200,Not Automated,
+TC-SCOPE-RPT-004,Reporting Permissions,High,Functional,Participant can report messages,"Verify participant can report (permission=allow)",Participant in group,"1. POST /messages/{msgId}/report with onBehalfOf=participant
+2. Verify status 200",Participant can report — 200,Not Automated,
+TC-SCOPE-RPT-005,Reporting Permissions,Low,Functional,Non-member CANNOT report group messages,"Verify non-member cannot report",User not in group,"1. POST /messages/{msgId}/report with onBehalfOf=non-member
+2. Verify status 403 or error",Non-member denied reporting — 403,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — CALL PERMISSIONS ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-CALL-001,Call Permissions,High,Functional,Owner can initiate group call,"Verify owner can start a group call",Owner in group,"1. POST /groups/{guid}/call with onBehalfOf=owner type=audio
+2. Verify status 200 or call session created",Owner can initiate call — 200,Not Automated,
+TC-SCOPE-CALL-002,Call Permissions,High,Functional,Admin can initiate group call,"Verify admin can start a group call",Admin in group,"1. POST /groups/{guid}/call with onBehalfOf=admin
+2. Verify status 200",Admin can initiate call — 200,Not Automated,
+TC-SCOPE-CALL-003,Call Permissions,High,Functional,Moderator can initiate group call,"Verify moderator can start call (permission=allow)",Moderator in group,"1. POST /groups/{guid}/call with onBehalfOf=moderator
+2. Verify status 200",Moderator can initiate call — 200,Not Automated,
+TC-SCOPE-CALL-004,Call Permissions,High,Functional,Participant can initiate group call,"Verify participant can start call (permission=allow)",Participant in group,"1. POST /groups/{guid}/call with onBehalfOf=participant
+2. Verify status 200",Participant can initiate call — 200,Not Automated,
+TC-SCOPE-CALL-005,Call Permissions,Medium,Functional,All roles can access call lobby,"Verify all roles can access call lobby (permission=allow for all)",All roles in group,"1. Verify call lobby accessible for owner
+2. Verify call lobby accessible for admin
+3. Verify call lobby accessible for moderator
+4. Verify call lobby accessible for participant",All roles can access lobby,Not Automated,
+TC-SCOPE-CALL-006,Call Permissions,Low,Negative,Non-member CANNOT initiate group call,"Verify non-member cannot start group call",User not in group,"1. POST /groups/{guid}/call with onBehalfOf=non-member
+2. Verify status 403 or error",Non-member denied initiating call — 403,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — MIME TYPE & MEDIA RESTRICTIONS ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-MIME-001,MIME Restrictions,Medium,Functional,Owner can send image media in group,"Verify owner can send image attachments",Owner in group,"1. POST /messages with onBehalfOf=owner type=image with image attachment
+2. Verify status 200",Owner can send images — 200,Not Automated,
+TC-SCOPE-MIME-002,MIME Restrictions,Medium,Functional,Owner can send video media in group,"Verify owner can send video attachments",Owner in group,"1. POST /messages with onBehalfOf=owner type=video
+2. Verify status 200",Owner can send videos — 200,Not Automated,
+TC-SCOPE-MIME-003,MIME Restrictions,Medium,Functional,Owner can send audio media in group,"Verify owner can send audio attachments",Owner in group,"1. POST /messages with onBehalfOf=owner type=audio
+2. Verify status 200",Owner can send audio — 200,Not Automated,
+TC-SCOPE-MIME-004,MIME Restrictions,Medium,Functional,Owner can send file/PDF in group,"Verify owner can send file attachments",Owner in group,"1. POST /messages with onBehalfOf=owner type=file with PDF
+2. Verify status 200",Owner can send files — 200,Not Automated,
+TC-SCOPE-MIME-005,MIME Restrictions,Medium,Functional,Participant can send allowed MIME types,"Verify participant can send media with allowed MIME types (Audio type configured)",Participant in group,"1. POST /messages with onBehalfOf=participant type=audio
+2. Verify status 200",Participant can send allowed MIME types — 200,Not Automated,
+TC-SCOPE-MIME-006,MIME Restrictions,Medium,Negative,Participant restricted by MIME type filter,"Verify participant is restricted by configured MIME type access control",Participant in group with MIME restrictions,"1. POST /messages with onBehalfOf=participant with restricted MIME type
+2. Verify status 403 or filtered response",Participant restricted by MIME filter,Not Automated,Depends on MIME config
+TC-SCOPE-MIME-007,MIME Restrictions,Medium,Functional,Owner can send media in threads,"Verify owner can send media attachments in thread replies",Owner in group with thread,"1. POST /messages with onBehalfOf=owner parentMessageId={id} type=image
+2. Verify status 200",Owner can send media in threads — 200,Not Automated,
+TC-SCOPE-MIME-008,MIME Restrictions,Medium,Functional,Participant can send allowed media in threads,"Verify participant can send allowed media types in threads",Participant in group with thread,"1. POST /messages with onBehalfOf=participant parentMessageId={id} type=audio
+2. Verify status 200",Participant can send allowed media in threads — 200,Not Automated,
+TC-SCOPE-MIME-009,MIME Restrictions,Low,Negative,Participant restricted by thread MIME filter,"Verify participant thread media restricted by MIME config",Participant in group,"1. POST /messages with onBehalfOf=participant parentMessageId={id} with restricted MIME
+2. Verify status 403 or filtered",Participant restricted by thread MIME filter,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — CROSS-ROLE EDGE CASES ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-EDGE-001,Edge Cases,High,Edge Case,Kicked member cannot perform any action,"Verify a kicked member loses all permissions immediately",Member was kicked from group,"1. Add uid as participant
+2. Kick uid from group
+3. POST /messages with onBehalfOf=kicked-uid to group
+4. Verify status 403 or error
+5. GET /groups/{guid}/members with onBehalfOf=kicked-uid
+6. Verify status 403 or error",Kicked member denied all actions,Not Automated,
+TC-SCOPE-EDGE-002,Edge Cases,High,Edge Case,Banned member cannot perform any action,"Verify a banned member loses all permissions",Member was banned from group,"1. Add uid as participant
+2. Ban uid from group
+3. POST /messages with onBehalfOf=banned-uid to group
+4. Verify status 403 or error
+5. POST /groups/{guid}/members/join with onBehalfOf=banned-uid
+6. Verify status 403 — cannot rejoin",Banned member denied all actions including rejoin,Not Automated,
+TC-SCOPE-EDGE-003,Edge Cases,High,Edge Case,Demoted admin loses admin privileges immediately,"Verify demoting admin to participant removes admin capabilities",Admin demoted to participant,"1. Add uid as admin — verify can kick members
+2. Demote uid to participant
+3. DELETE /groups/{guid}/members/{other-uid} with onBehalfOf=demoted-uid
+4. Verify status 403",Demoted admin loses privileges immediately,Not Automated,
+TC-SCOPE-EDGE-004,Edge Cases,High,Edge Case,Promoted participant gains new privileges immediately,"Verify promoting participant to moderator grants new capabilities",Participant promoted to moderator,"1. Add uid as participant — verify cannot kick
+2. Promote uid to moderator
+3. DELETE /groups/{guid}/members/{participant-uid} with onBehalfOf=promoted-uid
+4. Verify status 200",Promoted participant gains privileges immediately,Not Automated,
+TC-SCOPE-EDGE-005,Edge Cases,Medium,Edge Case,Owner transfer — new owner gets full permissions,"Verify transferring ownership grants all permissions to new owner",Owner transfers ownership,"1. Transfer ownership from uid-1 to uid-2
+2. Verify uid-2 can kick admins
+3. Verify uid-2 can ban members
+4. Verify uid-2 can promote/demote
+5. Verify uid-1 loses owner-only permissions",New owner has full permissions,Not Automated,
+TC-SCOPE-EDGE-006,Edge Cases,Medium,Edge Case,Multiple scope changes in rapid succession,"Verify rapid scope changes are applied correctly",Member in group,"1. Add uid as participant
+2. Immediately promote to moderator
+3. Immediately promote to admin
+4. Immediately demote to participant
+5. GET /groups/{guid}/members — verify final scope=participant",Rapid scope changes applied correctly,Not Automated,
+TC-SCOPE-EDGE-007,Edge Cases,Medium,Edge Case,Banned then unbanned member regains permissions,"Verify unbanned member can rejoin and has correct scope",Member was banned then unbanned,"1. Add uid as participant
+2. Ban uid
+3. Unban uid
+4. POST /groups/{guid}/members/join with onBehalfOf=uid
+5. Verify can rejoin
+6. POST /messages with onBehalfOf=uid — verify can send",Unbanned member can rejoin and message,Not Automated,
+TC-SCOPE-EDGE-008,Edge Cases,Medium,Edge Case,Participant tries all admin actions — all denied,"Verify participant is denied every admin-only action in one flow",Participant in group,"1. Try add member — verify 403
+2. Try kick member — verify 403
+3. Try ban member — verify 403
+4. Try unban member — verify 403
+5. Try list banned — verify 403
+6. Try upgrade scope — verify 403",All 6 admin actions denied for participant,Not Automated,Comprehensive denial test
+TC-SCOPE-EDGE-009,Edge Cases,Low,Edge Case,Concurrent scope changes from two admins,"Verify concurrent scope changes don't corrupt state",Two admins in group,"1. Admin1 promotes participant to moderator
+2. Simultaneously Admin2 tries to kick same participant
+3. Verify final state is consistent (either promoted or kicked)",Concurrent changes handled without corruption,Not Automated,Race condition test
+TC-SCOPE-EDGE-010,Edge Cases,Medium,Edge Case,Deleted group — all members lose access,"Verify deleting group removes all member permissions",Group with multiple members,"1. Create group with owner admin moderator participant
+2. DELETE /groups/{guid} with onBehalfOf=owner
+3. POST /messages with onBehalfOf=admin to deleted group
+4. Verify status 404 or error for all roles",All members lose access after group deletion,Not Automated,
+TC-SCOPE-EDGE-011,Edge Cases,Low,Edge Case,Re-add kicked member — scope resets to participant,"Verify re-adding a kicked member defaults to participant scope",Member was previously kicked,"1. Add uid as admin
+2. Kick uid
+3. Re-add uid (no scope specified)
+4. GET /groups/{guid}/members — verify scope=participant",Re-added member defaults to participant,Not Automated,
+TC-SCOPE-EDGE-012,Edge Cases,Medium,Edge Case,Non-member cannot access any group resource,"Verify non-member is denied all group operations",User not in group,"1. GET /groups/{guid}/members with onBehalfOf=non-member — verify 403
+2. POST /messages to group with onBehalfOf=non-member — verify 403
+3. POST /groups/{guid}/bannedmembers with onBehalfOf=non-member — verify 403
+4. DELETE /groups/{guid}/members/{uid} with onBehalfOf=non-member — verify 403",Non-member denied all group operations,Not Automated,
+TC-SCOPE-EDGE-013,Edge Cases,High,Edge Case,Participant cannot escalate own privileges via API,"Verify participant cannot use API to change own scope",Participant in group,"1. PUT /groups/{guid}/members/{self-uid} with onBehalfOf=self scope=owner
+2. Verify status 403
+3. PUT scope=admin — verify 403
+4. PUT scope=moderator — verify 403
+5. GET /groups/{guid}/members — verify scope still participant",Privilege escalation prevented,Not Automated,Security critical
+TC-SCOPE-EDGE-014,Edge Cases,Medium,Edge Case,Owner kicks all members — group still functional,"Verify owner can kick everyone and group remains",Owner in group with members,"1. Kick admin
+2. Kick moderator
+3. Kick participant
+4. Verify owner still in group
+5. POST /messages — verify owner can still send",Group functional with only owner,Not Automated,
+TC-SCOPE-EDGE-015,Edge Cases,Low,Edge Case,Maximum members with mixed scopes,"Verify group handles many members with different scopes",Group with 10+ members,"1. Add 3 admins 3 moderators 4 participants
+2. Verify all can send messages
+3. Verify scope hierarchy enforced for all",Large group with mixed scopes works,Not Automated,
+,,,,,,,,,,
+,,,,"═══ MEMBER SCOPE — UI VALIDATION (BROWSER) ═══",,,,,,
+,,,,,,,,,,
+TC-SCOPE-UI-001,UI Scope Validation,High,Functional,Owner sees all admin actions in group details UI,"Verify owner sees Add Members / Delete Chat / Delete and Exit in UI",Logged in as owner in group chat,"1. Login as group owner
+2. Open group chat
+3. Click message header to open group details
+4. Verify 'Add Members' action visible
+5. Verify 'Delete Chat' action visible
+6. Verify 'Delete and Exit' action visible
+7. Verify owner badge visible
+8. Verify View Members and Banned Members tabs",Owner sees all admin actions in UI,Not Automated,
+TC-SCOPE-UI-002,UI Scope Validation,High,Functional,Owner can add member via UI,"Verify owner can add member through group details UI",Logged in as owner,"1. Open group details
+2. Click Add Members
+3. Select a user
+4. Click Add Member button
+5. Verify member appears in list",Owner can add member via UI,Not Automated,
+TC-SCOPE-UI-003,UI Scope Validation,High,Functional,Owner can kick member via UI hover menu,"Verify owner can kick member through hover menu in group details",Owner in group with members,"1. Open group details
+2. Hover on member row
+3. Click submenu icon
+4. Click Kick
+5. Verify member removed from list",Owner can kick via UI,Not Automated,
+TC-SCOPE-UI-004,UI Scope Validation,High,Functional,Owner can delete and exit group via UI,"Verify owner can delete group through UI",Logged in as owner,"1. Open group details
+2. Click Delete and Exit
+3. Confirm in dialog
+4. Verify returned to groups list",Owner can delete group via UI,Not Automated,
+TC-SCOPE-UI-005,UI Scope Validation,High,Functional,Participant does NOT see admin actions in group details UI,"Verify participant cannot see Add Members / kick / ban actions",Logged in as participant in group,"1. Login as participant user
+2. Open group chat
+3. Click message header to open group details
+4. Verify 'Add Members' action NOT visible
+5. Verify kick option NOT available on member hover
+6. Verify 'Banned Members' tab NOT visible or empty",Participant sees no admin actions in UI,Not Automated,Critical UI permission check
+TC-SCOPE-UI-006,UI Scope Validation,High,Functional,Participant can send messages in group UI,"Verify participant can type and send messages in group chat",Logged in as participant,"1. Login as participant
+2. Open group chat
+3. Verify composer visible and editable
+4. Type message and send
+5. Verify outgoing bubble appears",Participant can send messages via UI,Not Automated,
+TC-SCOPE-UI-007,UI Scope Validation,Medium,Functional,Participant can react to messages in group UI,"Verify participant can add emoji reactions via UI",Logged in as participant in group,"1. Hover on a message
+2. Click React icon
+3. Select emoji
+4. Verify reaction appears",Participant can react via UI,Not Automated,
+TC-SCOPE-UI-008,UI Scope Validation,Medium,Functional,Participant can use threads in group UI,"Verify participant can open and reply in threads",Logged in as participant in group,"1. Hover message → open thread
+2. Type reply in thread composer
+3. Send
+4. Verify thread reply appears",Participant can use threads via UI,Not Automated,
+TC-SCOPE-UI-009,UI Scope Validation,Medium,Functional,Participant can initiate calls in group UI,"Verify participant can start voice/video calls",Logged in as participant in group,"1. Verify voice call button visible
+2. Verify video call button visible
+3. Click voice call — verify ongoing call overlay",Participant can initiate calls via UI,Not Automated,
+TC-SCOPE-UI-010,UI Scope Validation,Medium,Functional,Admin sees admin actions but not owner-only actions,"Verify admin sees Add Members and kick but respects hierarchy",Logged in as admin in group,"1. Login as admin user
+2. Open group details
+3. Verify Add Members visible
+4. Hover on participant — verify kick available
+5. Hover on owner — verify kick NOT available",Admin sees appropriate actions based on hierarchy,Not Automated,
+TC-SCOPE-UI-011,UI Scope Validation,Medium,Functional,Moderator sees moderator-level actions in UI,"Verify moderator can kick participants but not admins via UI",Logged in as moderator in group,"1. Login as moderator
+2. Open group details
+3. Hover on participant — verify kick available
+4. Hover on admin — verify kick NOT available
+5. Hover on owner — verify kick NOT available",Moderator sees correct hierarchy actions,Not Automated,
+TC-SCOPE-UI-012,UI Scope Validation,Medium,UI Validation,Owner badge visible only on group owner,"Verify owner badge element appears only on the owner member row",Group details open,"1. Open group details → View Members
+2. Verify owner row has owner badge CSS class
+3. Verify non-owner rows do NOT have owner badge",Owner badge correctly displayed,Not Automated,
+TC-SCOPE-UI-013,UI Scope Validation,Low,Edge Case,Participant sees own messages with edit/delete but not others,"Verify participant can edit/delete own messages but not others in UI",Logged in as participant with messages,"1. Hover own outgoing message — verify Edit and Delete in submenu
+2. Hover incoming message from admin — verify Edit NOT in submenu
+3. Verify Delete NOT available for others messages",Participant message actions scoped correctly,Not Automated,
+TC-SCOPE-UI-014,UI Scope Validation,Medium,Functional,Group details member count matches actual members,"Verify member count in group list matches actual member count in details",Group with known member count,"1. Navigate to Groups tab
+2. Note member count subtitle (e.g. '3 Members')
+3. Open group → group details
+4. Count members in View Members tab
+5. Verify counts match",Member count accurate,Not Automated,
+TC-SCOPE-UI-015,UI Scope Validation,Low,Edge Case,Scope change reflected in UI without page reload,"Verify promoting/demoting a member via API reflects in UI",Group details open,"1. Open group details showing member as participant
+2. Via API promote member to admin
+3. Refresh or re-open group details
+4. Verify member now shows admin scope",Scope change reflected in UI,Not Automated,

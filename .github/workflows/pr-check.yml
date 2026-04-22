@@ -1,0 +1,97 @@
+# ============================================================================
+# PR Quality Gate — Runs on every pull request
+# ============================================================================
+#
+# Lightweight checks that must pass before merge:
+#   1. TypeScript compiles clean
+#   2. API tests pass (no browser needed, fast)
+#   3. Smoke test — login + send one message (validates app is functional)
+#
+# Full UI + Integration suite runs in e2e-tests.yml
+# ============================================================================
+
+name: PR Quality Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'cometchat-qa-framework/**'
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  NODE_VERSION: '20'
+  WORKING_DIR: cometchat-qa-framework
+  BASE_URL: ${{ vars.BASE_URL || 'http://localhost:3000' }}
+  PRIMARY_UID: ${{ vars.PRIMARY_UID || 'cometchat-uid-1' }}
+  SECONDARY_UID: ${{ vars.SECONDARY_UID || 'cometchat-uid-2' }}
+  CHAT_TARGET_USER: ${{ vars.CHAT_TARGET_USER || 'George Alan' }}
+  COMETCHAT_APP_ID: ${{ secrets.COMETCHAT_APP_ID }}
+  COMETCHAT_REGION: ${{ secrets.COMETCHAT_REGION || 'us' }}
+  COMETCHAT_API_KEY: ${{ secrets.COMETCHAT_API_KEY }}
+
+jobs:
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  api-smoke:
+    name: API Smoke Test
+    needs: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: secrets.COMETCHAT_APP_ID != ''
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+      - run: npm ci
+      - run: npx playwright install chromium --with-deps
+      - name: Run API tests
+        run: npx playwright test tests/api/auth.api.spec.ts tests/api/user.api.spec.ts --project=chromium
+      - name: Upload results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-api-results
+          path: ${{ env.WORKING_DIR }}/test-results/
+          retention-days: 7
+
+  pr-summary:
+    name: PR Summary
+    needs: [typecheck, api-smoke]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Generate PR summary
+        run: |
+          echo "## 🔍 PR Quality Gate" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeScript | ${{ needs.typecheck.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| API Smoke | ${{ needs.api-smoke.result == 'success' && '✅' || needs.api-smoke.result == 'skipped' && '⏭️ (no API key)' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

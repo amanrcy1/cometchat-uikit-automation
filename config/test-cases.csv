@@ -1,0 +1,1062 @@
+Test Case ID,Module,Priority,Type,Title,Description,Preconditions,Test Steps,Expected Result,Status,Comments
+,,,,,,,,,,
+,,,,"═══ LOGIN / AUTHENTICATION ═══",,,,,,
+TC-AUTH-001,Login,High,Functional,Login screen renders with heading and login button,"Verify the login page shows 'Sign in to cometchat' heading and Login button",App is running at localhost:3000,"1. Navigate to base URL
+2. Verify 'Sign in to cometchat' heading visible
+3. Verify Login button visible",Login screen renders with heading and button,Not Automated,
+TC-AUTH-002,Login,High,Functional,Login with valid UID via clickable button,"Verify user can login by clicking a UID button on the login screen",On login screen with UID buttons,"1. Click UID button (cometchat-uid-1)
+2. Click Login button
+3. Wait for page load
+4. Verify 'Chats' heading visible",User logged in and Chats tab visible,Automated,
+TC-AUTH-003,Login,High,Functional,Login with valid UID via text input,"Verify user can login by typing UID in input field",On login screen with UID input,"1. Fill 'Enter your UID' input with cometchat-uid-1
+2. Click Login button
+3. Verify Chats heading visible",User logged in successfully,Not Automated,
+TC-AUTH-004,Login,High,Negative,Login with invalid UID,"Verify login fails gracefully with non-existent UID",On login screen,"1. Enter invalid UID 'nonexistent-user-xyz'
+2. Click Login button
+3. Verify error message or login screen remains",Login fails gracefully without crash,Not Automated,
+TC-AUTH-005,Login,Medium,Negative,Login with empty UID,"Verify login button behavior when no UID is provided",On login screen,"1. Leave UID field empty
+2. Click Login button
+3. Verify validation or no action",Login does not proceed with empty UID,Not Automated,
+TC-AUTH-006,Login,High,Functional,Session persistence via storageState,"Verify saved session skips login screen on reload",User previously logged in with saved session,"1. Navigate to base URL with saved storageState
+2. Verify Chats heading visible without login flow",Session restored — login skipped,Automated,
+TC-AUTH-007,Login,High,Functional,Logout returns to login screen,"Verify logout navigates back to login screen",User is logged in,"1. Click sidebar menu
+2. Click Log Out
+3. Verify 'Sign in to cometchat' heading visible",Login screen displayed after logout,Automated,
+TC-AUTH-008,Login,High,Functional,Logout and re-login as same user,"Verify full logout then re-login cycle",User is logged in,"1. Logout
+2. Verify login screen
+3. Login as cometchat-uid-1
+4. Verify Chats tab visible",Re-login successful,Automated,
+TC-AUTH-009,Login,High,Functional,Login as different user (uid-2) and switch back,"Verify multi-user login: logout uid-1 login uid-2 then switch back",User logged in as uid-1,"1. Logout uid-1
+2. Login as cometchat-uid-2
+3. Verify Chats visible
+4. Navigate to Users tab — verify list
+5. Send message as uid-2
+6. Logout uid-2
+7. Re-login as uid-1
+8. Verify Chats visible",Multi-user login works correctly,Automated,
+TC-AUTH-010,Login,Medium,Edge Case,Dismiss runtime error overlay on login,"Verify webpack/React error overlays are dismissed during login",On login screen with potential overlays,"1. Navigate to app
+2. If error overlay appears dismiss it
+3. Verify login screen accessible",Error overlays dismissed — login accessible,Automated,
+TC-AUTH-011,Login,Low,Edge Case,Rapid login/logout cycle,"Verify app handles rapid login/logout without crash",User is logged in,"1. Logout
+2. Immediately login
+3. Immediately logout
+4. Login again
+5. Verify Chats visible",App stable after rapid auth cycles,Not Automated,
+TC-AUTH-012,Login,Medium,UI Validation,Login button styling and state,"Verify Login button has correct styling and is clickable",On login screen,"1. Verify Login button is visible and enabled
+2. Verify button has correct text 'Login'
+3. Verify button is clickable",Login button properly styled and interactive,Not Automated,
+,,,,,,,,,,
+,,,,"═══ CHATS TAB / CONVERSATION LIST ═══",,,,,,
+TC-CHAT-001,Chats Tab,High,Functional,Sidebar menu displays user name and menu items,"Verify sidebar menu shows logged-in user name Create conversation and Log Out",User is logged in on Chats tab,"1. Click sidebar sub-menu icon
+2. Verify 'Andrew Joseph' visible
+3. Verify 'Create conversation' item visible
+4. Verify 'Log Out' item visible
+5. Close menu
+6. Reopen menu — verify items still visible
+7. Close menu",All menu items visible and menu toggles correctly,Automated,
+TC-CHAT-002,Chats Tab,Medium,UI Validation,Conversation list shows subtitle icons and receipt indicators,"Verify conversation list items display subtitle icons receipt indicators sender labels and date labels",User logged in with existing conversations,"1. Navigate to Chats tab
+2. Check subtitle icons (thread/video/audio)
+3. Verify receipt indicators (sent/delivered/read)
+4. Verify sender labels ('You:')
+5. Verify date/time labels on conversations",Subtitle icons receipts and dates render correctly,Automated,
+TC-CHAT-003,Chats Tab,High,Functional,New Chat panel structure and navigation,"Verify New Chat panel opens with header Users/Groups tabs search and back button",User logged in on Chats tab,"1. Open Create Conversation from sidebar
+2. Verify 'New Chat' header title
+3. Verify Users and Groups tabs
+4. Verify Users tab active by default
+5. Verify search input visible
+6. Verify sample users listed
+7. Switch to Groups tab — verify groups listed
+8. Switch back to Users tab
+9. Search 'Susan' — verify filtering
+10. Clear search
+11. Click back button — panel closes
+12. Reopen panel — works again",Panel structure correct with working tabs search and navigation,Automated,
+TC-CHAT-004,Chats Tab,High,Functional,Create 1:1 conversation via New Chat panel,"Verify creating a 1:1 conversation and sending a message",User logged in on Chats tab,"1. Open New Chat panel
+2. Search 'Susan'
+3. Select Susan Marie
+4. Verify message header shows 'Susan Marie'
+5. Send 'Hello from create conversation'
+6. Verify message bubble
+7. Navigate to Chats sidebar
+8. Verify Susan Marie in conversation list",1:1 conversation created and message sent,Automated,
+TC-CHAT-005,Chats Tab,High,Functional,Create group conversation via New Chat panel,"Verify creating a group conversation via New Chat panel",User logged in on Chats tab,"1. Open New Chat panel
+2. Switch to Groups tab
+3. Select first group
+4. Verify message header shows group name
+5. Send message
+6. Verify message bubble",Group conversation opened and message sent,Automated,
+TC-CHAT-006,Chats Tab,High,Functional,Conversation hover delete and search,"Verify hover delete icon on conversations and search functionality",User has existing conversations,"1. Hover first conversation — verify delete icon
+2. Search 'Susan Marie' — verify result
+3. Clear search
+4. Delete Susan Marie conversation via hover
+5. Delete a group conversation via hover",Delete icon on hover and search work correctly,Automated,
+TC-CHAT-007,Chats Tab,High,Functional,Conversation ordering — newest message moves to top,"Verify sending a message moves that conversation to top of list",User has multiple conversations,"1. Note current first conversation
+2. Open a different user and send message
+3. Navigate to Chats tab
+4. Verify messaged conversation is now at top",Conversation ordering updates on new message,Automated,
+TC-CHAT-008,Chats Tab,Medium,UI Validation,Unread count badge visible on conversations,"Verify unread count badges render in conversation list",User logged in with conversations,"1. Navigate to Chats tab
+2. Check for unread badge elements (cometchat-badge)
+3. Verify conversation list visible",Unread badges render when applicable,Automated,
+TC-CHAT-009,Chats Tab,Medium,Functional,Conversation search filters results,"Verify sidebar search filters conversation list",User has conversations,"1. Type user name in conversation search input
+2. Verify matching conversation visible
+3. Verify non-matching conversations hidden
+4. Clear search — all conversations return",Search filters and clears correctly,Automated,
+TC-CHAT-010,Chats Tab,Medium,Edge Case,Search with no results shows empty state,"Verify searching for non-existent conversation shows empty or no results",User on Chats tab,"1. Type 'zzz_nonexistent_user_xyz' in search
+2. Verify no conversation items visible or empty state
+3. Clear search",No results shown for non-matching search,Not Automated,
+TC-CHAT-011,Chats Tab,Low,Edge Case,Search with special characters,"Verify search handles special characters without crash",User on Chats tab,"1. Type '@#$%^&*' in search input
+2. Verify no crash
+3. Clear search",App handles special character search gracefully,Not Automated,
+TC-CHAT-012,Chats Tab,Medium,UI Validation,Conversation list date labels format,"Verify date labels show correct format (Today/Yesterday/date)",User has conversations from different dates,"1. Navigate to Chats tab
+2. Verify date labels visible
+3. Verify first date label has non-empty text",Date labels display correctly,Automated,
+TC-CHAT-013,Chats Tab,Medium,UI Validation,Conversation subtitle shows sender label and preview,"Verify subtitle shows 'You:' prefix and message preview text",User has sent messages,"1. Navigate to Chats tab
+2. Verify 'You:' sender labels visible
+3. Verify message preview text visible",Subtitle content renders correctly,Automated,
+TC-CHAT-014,Chats Tab,Low,Edge Case,Delete last conversation in list,"Verify deleting the only remaining conversation handles gracefully",User has one conversation,"1. Delete the conversation via hover
+2. Verify empty state or no crash",App handles empty conversation list,Not Automated,
+TC-CHAT-015,Chats Tab,Medium,Functional,New Chat panel Users tab shows all sample users,"Verify all 4 sample users are listed in New Chat Users tab",User on Chats tab,"1. Open New Chat panel
+2. Verify 4 users listed in Users tab",All sample users visible,Automated,
+TC-CHAT-016,Chats Tab,Medium,Functional,New Chat panel Groups tab shows groups,"Verify groups are listed in New Chat Groups tab",User on Chats tab with groups,"1. Open New Chat panel
+2. Switch to Groups tab
+3. Verify at least one group listed",Groups listed in New Chat panel,Automated,
+,,,,,,,,,,
+,,,,"═══ USERS TAB ═══",,,,,,
+TC-USR-001,Users Tab,High,Functional,Users list with alphabetical section headers,"Verify users list renders with A-Z section headers",User is logged in,"1. Navigate to Users tab
+2. Verify section headers (G J N S etc.)
+3. Verify each header is single uppercase letter
+4. Verify at least 2 distinct letter groups",Users list renders with alphabetical headers,Automated,
+TC-USR-002,Users Tab,High,Functional,Search user and open chat,"Verify searching for a user and opening their chat",User on Users tab,"1. Search for 'George Alan'
+2. Verify George Alan in results
+3. Click George Alan
+4. Verify chat composer visible",User found and chat opened,Automated,
+TC-USR-003,Users Tab,Medium,Functional,Search user with partial name,"Verify partial name search returns matching users",User on Users tab,"1. Type 'Geo' in search
+2. Verify George Alan appears in results",Partial search returns matches,Not Automated,
+TC-USR-004,Users Tab,Medium,Edge Case,Search user with no results,"Verify searching for non-existent user shows no results",User on Users tab,"1. Type 'zzz_nonexistent' in search
+2. Verify no user items visible",No results for non-matching search,Not Automated,
+TC-USR-005,Users Tab,Medium,UI Validation,User list item shows avatar and name,"Verify each user list item has circular avatar and name",User on Users tab,"1. Verify user list items visible
+2. Verify avatar images present
+3. Verify name text visible",User items have avatar and name,Automated,
+TC-USR-006,Users Tab,Medium,UI Validation,User presence indicators in list,"Verify online/offline status indicators on user list items",User on Users tab,"1. Check for online/offline CSS classes on user items
+2. Verify at least one user has status indicator",Presence indicators visible,Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — TEXT MESSAGING ═══",,,,,,
+TC-MSG-001,1:1 Chat,High,Functional,Send text message and verify bubble,"Verify sending a text message creates an outgoing bubble",User in 1:1 chat,"1. Type message in composer
+2. Click Send button
+3. Verify outgoing bubble appears with message text",Text message sent and bubble visible,Automated,
+TC-MSG-002,1:1 Chat,High,Functional,Send message via Enter key,"Verify pressing Enter sends the message",User in 1:1 chat,"1. Type message in composer
+2. Press Enter
+3. Verify outgoing bubble appears",Enter key sends message,Automated,
+TC-MSG-003,1:1 Chat,Medium,Functional,Shift+Enter adds newline without sending,"Verify Shift+Enter creates a new line in composer",User in 1:1 chat,"1. Type first line
+2. Press Shift+Enter
+3. Type second line
+4. Verify composer has multiline text",Newline added without sending,Automated,
+TC-MSG-004,1:1 Chat,Medium,Negative,Cannot send empty message,"Verify empty message cannot be sent",User in 1:1 chat,"1. Leave composer empty
+2. Click Send or press Enter
+3. Verify no new bubble appears",Empty message not sent,Automated,
+TC-MSG-005,1:1 Chat,Medium,Edge Case,Send very long text message,"Verify sending a message with 1000+ characters",User in 1:1 chat,"1. Type a very long message (1000+ chars)
+2. Send message
+3. Verify bubble appears with full text",Long message sent and displayed,Not Automated,
+TC-MSG-006,1:1 Chat,Low,Edge Case,Send message with special characters,"Verify sending message with emojis unicode and special chars",User in 1:1 chat,"1. Type message with special chars: <>&""'@#$
+2. Send message
+3. Verify text renders correctly without XSS",Special characters rendered safely,Not Automated,
+TC-MSG-007,1:1 Chat,Low,Edge Case,Send message with only whitespace,"Verify whitespace-only message behavior",User in 1:1 chat,"1. Type only spaces/tabs
+2. Try to send
+3. Verify behavior (should not send or sends trimmed)",Whitespace-only message handled correctly,Not Automated,
+TC-MSG-008,1:1 Chat,High,Functional,Message delivery receipt visible,"Verify sent message shows delivery receipt icon",User in 1:1 chat,"1. Send a message
+2. Verify receipt icon (sent/delivered/read) on bubble
+3. Verify receipt has CSS class",Receipt indicator visible on sent message,Automated,
+TC-MSG-009,1:1 Chat,Medium,Functional,Message receipt states (sent/delivered/read),"Verify receipt CSS classes indicate message state",User in 1:1 chat with messages,"1. Check receipt classes on outgoing bubbles
+2. Verify class contains 'cometchat-receipts'
+3. Verify state class (sent/delivered/read)",Receipt states correctly indicated,Automated,
+TC-MSG-010,1:1 Chat,Medium,Functional,Incoming message bubble renders,"Verify incoming messages from other user display correctly",User in 1:1 chat with incoming messages,"1. Verify incoming bubble elements exist
+2. Verify incoming bubble has different styling from outgoing",Incoming bubbles render correctly,Automated,
+TC-MSG-011,1:1 Chat,Medium,Functional,Message pagination — scroll up loads older messages,"Verify scrolling up triggers loading of older messages",User in chat with message history,"1. Verify messages exist
+2. Scroll message list to top
+3. Wait for older messages to load
+4. Verify message count >= before",Pagination loads older messages on scroll,Automated,
+TC-MSG-012,1:1 Chat,Medium,Functional,Auto-scroll to bottom on new message,"Verify chat auto-scrolls to bottom when new message sent",User in 1:1 chat,"1. Send a message
+2. Verify scroll position near bottom of message list",Auto-scroll works on new message,Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — MESSAGE ACTIONS ═══",,,,,,
+TC-ACT-001,1:1 Chat,High,Functional,React to message with emoji,"Verify adding emoji reaction to outgoing message",User in 1:1 chat with messages,"1. Hover on outgoing bubble
+2. Click React icon
+3. Pick first emoji from keyboard
+4. Verify reaction appears on message",Emoji reaction added to message,Automated,
+TC-ACT-002,1:1 Chat,Medium,Functional,Add multiple emoji reactions,"Verify adding multiple different reactions to same message",User in 1:1 chat,"1. Send message
+2. Add first reaction
+3. Add second reaction (different emoji)
+4. Verify multiple reactions visible (count >= 2)",Multiple reactions displayed,Automated,
+TC-ACT-003,1:1 Chat,High,Functional,Edit a sent text message,"Verify editing a sent message updates the bubble text",User in 1:1 chat,"1. Send 'original message'
+2. Open submenu → Edit
+3. Select all text and type 'edited message'
+4. Click Send
+5. Verify bubble shows 'edited message'",Message edited successfully,Automated,
+TC-ACT-004,1:1 Chat,High,Functional,Delete a sent message,"Verify deleting a message shows delete bubble placeholder",User in 1:1 chat,"1. Send 'to be deleted'
+2. Open submenu → Delete
+3. Verify delete bubble text appears",Message deleted with placeholder shown,Automated,
+TC-ACT-005,1:1 Chat,Medium,Functional,Copy message to clipboard,"Verify copy action copies message text to clipboard",User in 1:1 chat,"1. Send 'copy this text'
+2. Open submenu → Copy
+3. Read clipboard content
+4. Verify clipboard contains 'copy this text'",Message text copied to clipboard,Automated,
+TC-ACT-006,1:1 Chat,Medium,Functional,Direct reply to a message,"Verify inline reply to a message",User in 1:1 chat,"1. Send 'reply target'
+2. Click Reply icon on hover
+3. Type 'this is a direct reply'
+4. Send reply
+5. Verify reply bubble visible",Direct reply sent and visible,Automated,
+TC-ACT-007,1:1 Chat,Medium,Functional,Message info panel opens and closes,"Verify message info panel shows delivery info",User in 1:1 chat,"1. Send message
+2. Open submenu → Info
+3. Verify message info panel visible
+4. Close info panel",Info panel opens and closes correctly,Automated,
+TC-ACT-008,1:1 Chat,Medium,Functional,Hover menu appears on outgoing bubble,"Verify hovering outgoing bubble shows action menu icons",User in 1:1 chat with messages,"1. Hover on last outgoing bubble
+2. Verify React icon visible
+3. Verify three-dot submenu icon visible",Hover menu appears with action icons,Automated,
+TC-ACT-009,1:1 Chat,Medium,Functional,Submenu shows Edit Delete Copy Info Reply options,"Verify three-dot submenu contains all expected action items",User in 1:1 chat,"1. Hover outgoing bubble
+2. Click three-dot submenu
+3. Verify Edit Delete Copy Info Reply in thread items visible",All submenu actions present,Automated,
+TC-ACT-010,1:1 Chat,Medium,Edge Case,Edit message then send new message,"Verify editing doesn't affect subsequent new messages",User in 1:1 chat,"1. Send and edit a message
+2. Send a new message
+3. Verify new message is separate and unedited",Edit doesn't affect new messages,Not Automated,
+TC-ACT-011,1:1 Chat,Low,Edge Case,Delete already edited message,"Verify deleting a previously edited message works",User in 1:1 chat,"1. Send and edit a message
+2. Delete the edited message
+3. Verify delete bubble appears",Edited message can be deleted,Not Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — INCOMING MESSAGE ACTIONS ═══",,,,,,
+TC-INC-001,1:1 Chat,High,Functional,Mark Unread visible on incoming message hover,"Verify Mark Unread menu item appears on incoming message submenu",User in chat with incoming messages,"1. Hover on incoming message bubble
+2. Click submenu icon
+3. Verify 'Mark Unread' item visible",Mark Unread option visible,Automated,
+TC-INC-002,1:1 Chat,High,Functional,Mark Unread marks conversation as unread,"Verify Mark Unread action creates unread indicator in sidebar",User in chat with incoming messages,"1. Click Mark Unread on incoming message
+2. Navigate to Chats tab
+3. Verify unread indicator on conversation
+4. Re-open chat to clear",Conversation shows unread indicator,Automated,
+TC-INC-003,1:1 Chat,Medium,Edge Case,Mark Unread NOT available on outgoing messages,"Verify Mark Unread does not appear on sent messages",User in 1:1 chat,"1. Hover outgoing bubble
+2. Open submenu
+3. Verify Mark Unread is NOT present",Mark Unread absent from outgoing menu,Automated,
+TC-INC-004,1:1 Chat,High,Functional,Report visible on incoming message hover,"Verify Report menu item appears on incoming message submenu",User in chat with incoming messages,"1. Hover incoming bubble
+2. Click submenu icon
+3. Verify 'Report' item visible",Report option visible,Automated,
+TC-INC-005,1:1 Chat,High,Functional,Report action triggers without crash,"Verify clicking Report handles gracefully",User in chat with incoming messages,"1. Click Report on incoming message
+2. Handle confirm dialog if appears
+3. Verify app still functional (tabs visible)",Report action completes without crash,Automated,
+TC-INC-006,1:1 Chat,Medium,Edge Case,Report NOT available on outgoing messages,"Verify Report does not appear on sent messages",User in 1:1 chat,"1. Hover outgoing bubble
+2. Open submenu
+3. Verify Report is NOT present",Report absent from outgoing menu,Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — MEDIA UPLOADS ═══",,,,,,
+TC-MED-001,1:1 Chat,High,Functional,Upload image and verify bubble,"Verify image upload creates image bubble",User in 1:1 chat,"1. Click Attach button
+2. Select 'Attach Image'
+3. Choose sample-image.jpg
+4. Verify outgoing bubble with img element",Image uploaded and displayed in bubble,Automated,
+TC-MED-002,1:1 Chat,High,Functional,Upload video and verify bubble,"Verify video upload creates video bubble",User in 1:1 chat,"1. Click Attach button
+2. Select 'Attach Video'
+3. Choose sample-video.mp4
+4. Verify outgoing bubble with video element or mp4 text",Video uploaded and displayed,Automated,
+TC-MED-003,1:1 Chat,High,Functional,Upload audio and verify bubble,"Verify audio upload creates audio bubble",User in 1:1 chat,"1. Click Attach button
+2. Select 'Attach Audio'
+3. Choose sample-audio.mp3
+4. Verify outgoing bubble with audio bubble element",Audio uploaded and displayed,Automated,
+TC-MED-004,1:1 Chat,High,Functional,Upload PDF and verify bubble,"Verify PDF upload creates file bubble",User in 1:1 chat,"1. Click Attach button
+2. Select 'Attach File'
+3. Choose sample-file.pdf
+4. Verify outgoing bubble with .pdf text",PDF uploaded and displayed,Automated,
+TC-MED-005,1:1 Chat,Medium,Functional,Attach menu opens with 4 options,"Verify attach popover shows Image Video Audio File options",User in 1:1 chat,"1. Click Attach button
+2. Verify popover visible
+3. Verify 'Attach Image' option
+4. Verify 'Attach Video' option
+5. Verify 'Attach Audio' option
+6. Verify 'Attach File' option",All 4 attach options visible,Automated,
+TC-MED-006,1:1 Chat,Medium,Edge Case,Cancel file upload — composer still works,"Verify cancelling attach doesn't break composer",User in 1:1 chat,"1. Open attach menu
+2. Press Escape to cancel
+3. Send a text message
+4. Verify message sent successfully",Composer works after cancelled attach,Automated,
+TC-MED-007,1:1 Chat,Low,Edge Case,Upload multiple media types sequentially,"Verify uploading image then video then audio then PDF in sequence",User in 1:1 chat,"1. Upload image — verify
+2. Upload video — verify
+3. Upload audio — verify
+4. Upload PDF — verify",All 4 media types upload sequentially,Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — EMOJI ═══",,,,,,
+TC-EMJ-001,1:1 Chat,High,Functional,Open emoji keyboard picker,"Verify emoji button opens emoji keyboard panel",User in 1:1 chat,"1. Click Emoji button
+2. Verify emoji keyboard panel visible
+3. Verify emoji search input visible",Emoji keyboard opens,Automated,
+TC-EMJ-002,1:1 Chat,High,Functional,Select emoji by title and send,"Verify selecting an emoji by title inserts it and sends",User in 1:1 chat,"1. Open emoji keyboard
+2. Click 'grinning' emoji
+3. Click Send
+4. Verify outgoing bubble with emoji",Emoji selected and sent,Automated,
+TC-EMJ-003,1:1 Chat,Medium,Functional,Search emoji by keyword and send,"Verify emoji search filters and sends first result",User in 1:1 chat,"1. Open emoji keyboard
+2. Type 'thumbsup' in search
+3. Click first result
+4. Click Send
+5. Verify emoji in bubble",Emoji search and send works,Automated,
+TC-EMJ-004,1:1 Chat,Medium,Edge Case,Emoji keyboard closes after selection,"Verify emoji keyboard closes after picking an emoji",User in 1:1 chat,"1. Open emoji keyboard
+2. Select an emoji
+3. Verify keyboard closes or emoji inserted in composer",Keyboard behavior correct after selection,Not Automated,
+TC-EMJ-005,1:1 Chat,Low,Edge Case,Emoji search with no results,"Verify searching for non-existent emoji shows no results",User in 1:1 chat,"1. Open emoji keyboard
+2. Search 'zzz_nonexistent'
+3. Verify no emoji items visible",No results for invalid emoji search,Not Automated,
+TC-EMJ-006,1:1 Chat,Medium,Edge Case,Emoji keyboard closes on Escape,"Verify pressing Escape closes emoji keyboard",User in 1:1 chat with emoji keyboard open,"1. Open emoji keyboard
+2. Press Escape
+3. Verify keyboard hidden",Escape closes emoji keyboard,Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — VOICE RECORDING ═══",,,,,,
+TC-VRC-001,1:1 Chat,High,Functional,Start voice recording — recording bar appears,"Verify clicking voice button starts recording with visible bar",User in 1:1 chat with microphone permission,"1. Click Voice Recording button
+2. Verify recording bar or media recorder visible
+3. Verify timer/waveform elements present",Recording bar appears with timer,Automated,
+TC-VRC-002,1:1 Chat,High,Functional,Record and send voice message,"Verify recording for 2s then sending creates audio bubble",User in 1:1 chat,"1. Start recording
+2. Wait 2 seconds
+3. Stop recording
+4. Send recording
+5. Verify audio bubble appears",Voice message recorded and sent,Automated,
+TC-VRC-003,1:1 Chat,Medium,Functional,Pause and resume voice recording,"Verify pause/resume during recording works",User in 1:1 chat,"1. Start recording
+2. Record 1.5s then pause
+3. Wait 0.8s then resume
+4. Record 1.5s more
+5. Stop and send
+6. Verify audio bubble",Pause/resume recording works,Automated,
+TC-VRC-004,1:1 Chat,Medium,Functional,Delete/cancel voice recording,"Verify delete button cancels recording without sending",User in 1:1 chat,"1. Start recording
+2. Click delete button on recording bar
+3. Verify recording cancelled
+4. Verify composer returns to normal",Recording cancelled without sending,Automated,
+TC-VRC-005,1:1 Chat,Low,Edge Case,Recording bar hides composer input,"Verify recording bar replaces normal composer during recording",User in 1:1 chat,"1. Start recording
+2. Verify recording row visible
+3. Verify normal composer input may be hidden
+4. Cancel recording — composer returns",Recording bar UI state correct,Not Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — STICKERS ═══",,,,,,
+TC-STK-001,1:1 Chat,High,Functional,Sticker button visible in composer,"Verify sticker button exists alongside emoji button",User in 1:1 chat,"1. Verify Sticker button visible with title='Sticker'
+2. Verify button is enabled
+3. Verify separate from Emoji button (no overlap)",Sticker button visible and enabled,Automated,
+TC-STK-002,1:1 Chat,High,Functional,Sticker keyboard opens with tabs and grid,"Verify sticker keyboard panel shows tabs and sticker images",User in 1:1 chat,"1. Click Sticker button
+2. Verify sticker keyboard visible
+3. Verify tabs section visible
+4. Verify one tab active by default
+5. Verify sticker grid has items",Sticker keyboard opens with content,Automated,
+TC-STK-003,1:1 Chat,Medium,UI Validation,Sticker keyboard loading shimmer then real stickers,"Verify shimmer loading state transitions to real sticker images",User in 1:1 chat,"1. Open sticker keyboard
+2. Verify shimmer or real stickers visible
+3. Wait for real stickers to load
+4. Verify sticker images have valid src URLs containing 'sticker'",Loading state transitions correctly,Automated,
+TC-STK-004,1:1 Chat,Medium,Functional,Switch sticker set tabs — grid updates,"Verify switching tabs loads different sticker sets",User in 1:1 chat with sticker keyboard open,"1. Open sticker keyboard
+2. Note first sticker src
+3. Switch to second tab (if exists)
+4. Verify stickers load in new tab
+5. Switch back to first tab",Tab switching updates sticker grid,Automated,
+TC-STK-005,1:1 Chat,High,Functional,Click sticker sends immediately — no send button,"Verify clicking a sticker sends it as a message instantly",User in 1:1 chat,"1. Open sticker keyboard
+2. Count outgoing bubbles
+3. Click first sticker
+4. Verify new outgoing bubble appears",Sticker sends on click without send button,Automated,
+TC-STK-006,1:1 Chat,High,UI Validation,Sticker bubble renders with image,"Verify sent sticker appears as image bubble with valid src",User sent a sticker,"1. Verify last outgoing bubble visible
+2. Verify bubble contains img or sticker element
+3. Verify image has valid src URL (length > 10)",Sticker bubble renders with image,Automated,
+TC-STK-007,1:1 Chat,Medium,Functional,Toggle sticker keyboard open and close,"Verify sticker button toggles keyboard visibility",User in 1:1 chat,"1. Click Sticker — keyboard opens
+2. Click Sticker again — keyboard closes
+3. Click Sticker — keyboard reopens",Sticker keyboard toggles correctly,Automated,
+TC-STK-008,1:1 Chat,Medium,Edge Case,Sticker keyboard closes when emoji opens,"Verify mutual exclusion between sticker and emoji keyboards",User in 1:1 chat,"1. Open sticker keyboard
+2. Click Emoji button
+3. Verify emoji keyboard visible
+4. Verify sticker keyboard hidden",Only one keyboard visible at a time,Automated,
+TC-STK-009,1:1 Chat,Low,Edge Case,Sticker button in thread composer,"Verify sticker button exists in thread panel composer",User in 1:1 chat,"1. Send parent message and open thread
+2. Check for Sticker button in thread composer
+3. Close thread",Sticker button present in thread (if supported),Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — THREADS ═══",,,,,,
+TC-THR-001,1:1 Chat,High,Functional,Open thread panel from message submenu,"Verify Reply in thread opens thread panel with parent bubble",User in 1:1 chat,"1. Send parent message
+2. Open submenu → Reply in thread
+3. Verify thread panel visible
+4. Verify thread composer visible
+5. Verify parent bubble in thread",Thread panel opens with parent message,Automated,
+TC-THR-002,1:1 Chat,High,Functional,Send text message in thread,"Verify sending text in thread creates thread bubble",User with thread panel open,"1. Type message in thread composer
+2. Click thread Send button
+3. Verify thread outgoing bubble appears",Text sent in thread,Automated,
+TC-THR-003,1:1 Chat,Medium,Functional,React to message in thread,"Verify adding reaction to thread message",User with thread panel open,"1. Hover thread bubble
+2. Click React
+3. Pick emoji
+4. Verify reaction in thread",Reaction added in thread,Automated,
+TC-THR-004,1:1 Chat,Medium,Functional,Edit message in thread,"Verify editing a thread message updates text",User with thread panel open,"1. Open thread submenu → Edit
+2. Change text
+3. Send
+4. Verify edited text in thread bubble",Thread message edited,Automated,
+TC-THR-005,1:1 Chat,Medium,Functional,Delete message in thread,"Verify deleting a thread message shows delete placeholder",User with thread panel open,"1. Open thread submenu → Delete
+2. Verify delete bubble in thread",Thread message deleted,Automated,
+TC-THR-006,1:1 Chat,Medium,Functional,Upload image in thread,"Verify image upload works inside thread panel",User with thread panel open,"1. Click thread Attach button
+2. Select Attach Image
+3. Choose image file
+4. Verify image bubble in thread",Image uploaded in thread,Automated,
+TC-THR-007,1:1 Chat,Medium,Functional,Send emoji in thread,"Verify emoji picker works inside thread panel",User with thread panel open,"1. Click thread Emoji button
+2. Select emoji
+3. Send
+4. Verify emoji in thread bubble",Emoji sent in thread,Automated,
+TC-THR-008,1:1 Chat,Medium,Functional,Record voice in thread,"Verify voice recording works inside thread panel",User with thread panel open,"1. Click thread Voice Recording button
+2. Record for 2s
+3. Send
+4. Verify audio bubble in thread",Voice recorded and sent in thread,Automated,
+TC-THR-009,1:1 Chat,Medium,Functional,Close thread panel,"Verify thread panel closes via close button or Escape",User with thread panel open,"1. Click thread close button
+2. Verify thread panel hidden",Thread panel closes,Automated,
+TC-THR-010,1:1 Chat,Low,Edge Case,Thread composer has all action buttons,"Verify thread composer has Attach Emoji Voice buttons",User with thread panel open,"1. Verify thread Attach button visible
+2. Verify thread Emoji button visible
+3. Verify thread Voice Recording button visible
+4. Verify thread Send button attached",All thread composer buttons present,Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — SEARCH ═══",,,,,,
+TC-SRC-001,1:1 Chat,Medium,Functional,Open in-chat search panel,"Verify search button opens search panel in chat",User in 1:1 chat,"1. Click Search button in message header
+2. Verify search input appears",Chat search panel opens,Automated,
+TC-SRC-002,1:1 Chat,Medium,Functional,Search for existing message text,"Verify searching finds matching messages",User in 1:1 chat with messages,"1. Open chat search
+2. Type known message text
+3. Verify search executes",Search finds matching messages,Automated,
+TC-SRC-003,1:1 Chat,Medium,Functional,Close search panel,"Verify search panel closes and clears residual text",User with search panel open,"1. Press Escape
+2. Verify search panel closes
+3. Verify sidebar search inputs cleared",Search panel closes cleanly,Automated,
+TC-SRC-004,1:1 Chat,Low,Edge Case,Search with no matching results,"Verify searching for non-existent text handles gracefully",User in 1:1 chat,"1. Open search
+2. Type 'zzz_nonexistent_message_xyz'
+3. Verify no crash",No-result search handled gracefully,Not Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — CALLS ═══",,,,,,
+TC-CLL-001,1:1 Chat,High,Functional,Initiate voice call and verify overlay,"Verify voice call button shows outgoing call overlay",User in 1:1 chat,"1. Click Voice call button
+2. Verify outgoing call overlay visible
+3. Verify user name in overlay
+4. Verify 'Calling...' subtitle",Voice call overlay appears,Automated,
+TC-CLL-002,1:1 Chat,High,Functional,Cancel outgoing voice call,"Verify cancel button dismisses call overlay",User with outgoing call overlay,"1. Click cancel button on overlay
+2. Verify overlay disappears",Voice call cancelled,Automated,
+TC-CLL-003,1:1 Chat,High,Functional,Initiate video call and verify overlay,"Verify video call button shows outgoing call overlay",User in 1:1 chat,"1. Click Video call button
+2. Verify outgoing call overlay visible",Video call overlay appears,Automated,
+TC-CLL-004,1:1 Chat,High,Functional,Cancel outgoing video call,"Verify cancel button dismisses video call overlay",User with outgoing call overlay,"1. Click cancel button
+2. Verify overlay disappears",Video call cancelled,Automated,
+TC-CLL-005,1:1 Chat,Medium,UI Validation,Outgoing call overlay shows user name and Calling text,"Verify overlay displays correct user name and status",User with outgoing call overlay,"1. Verify title shows expected user name
+2. Verify subtitle shows 'Calling...'",Call overlay content correct,Automated,
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — USER DETAILS ═══",,,,,,
+TC-DET-001,1:1 Chat,High,Functional,Open user details panel,"Verify clicking message header opens user details",User in 1:1 chat,"1. Click message header list item
+2. Verify user details panel visible",User details panel opens,Automated,
+TC-DET-002,1:1 Chat,Medium,Functional,User details shows status (Online/Offline),"Verify details panel shows user status",User details panel open,"1. Verify status element visible
+2. Verify text is 'Online' or 'Offline'",Status displayed correctly,Automated,
+TC-DET-003,1:1 Chat,Medium,Functional,Header subtitle shows status text,"Verify message header subtitle shows Online/Offline/Last seen",User in 1:1 chat,"1. Verify header subtitle visible
+2. Verify non-empty status text",Header status visible,Automated,
+TC-DET-004,1:1 Chat,High,Functional,Block user from details panel,"Verify blocking a user via details panel",User details panel open,"1. Click Block button
+2. Confirm in dialog
+3. Verify block action completes",User blocked successfully,Automated,
+TC-DET-005,1:1 Chat,High,Functional,Unblock user from details panel,"Verify unblocking a previously blocked user",User is blocked in details panel,"1. Click Unblock button
+2. Verify unblock completes",User unblocked successfully,Automated,
+TC-DET-006,1:1 Chat,Medium,Functional,Delete chat from user details,"Verify deleting chat history from details panel",User details panel open,"1. Click Delete action
+2. Confirm in dialog
+3. Verify chat deleted",Chat history deleted,Automated,
+TC-DET-007,1:1 Chat,Medium,Functional,Close user details panel,"Verify details panel closes via close button",User details panel open,"1. Click close button
+2. Verify panel hidden",Details panel closes,Automated,
+,,,,,,,,,,
+,,,,"═══ GROUPS TAB ═══",,,,,,
+TC-GRP-001,Groups Tab,High,Functional,Groups list renders with search and member count,"Verify groups list renders with search bar and member count subtitle",User is logged in,"1. Navigate to Groups tab
+2. Verify groups list visible
+3. Verify member count subtitle on first group (N Members)
+4. Verify search input visible",Groups list renders with member count,Automated,
+TC-GRP-002,Groups Tab,Medium,Functional,Search groups by name,"Verify groups search filters the list",User on Groups tab,"1. Search for existing group name
+2. Verify matching group visible
+3. Clear search — all groups return",Group search works,Automated,
+TC-GRP-003,Groups Tab,Medium,Edge Case,Search groups with no results,"Verify searching for non-existent group shows empty",User on Groups tab,"1. Search 'zzz_nonexistent_group'
+2. Verify no group items visible
+3. Clear search",No results for non-matching group search,Automated,
+TC-GRP-004,Groups Tab,High,Functional,Create public group and open chat,"Verify creating a public group opens chat with composer",User on Groups tab,"1. Click create group button
+2. Verify create group modal visible
+3. Fill group name
+4. Click submit
+5. Verify chat opens with composer",Public group created and chat opened,Automated,
+TC-GRP-005,Groups Tab,High,Functional,Create private group and send message,"Verify creating a private group and messaging",User on Groups tab,"1. Open create group form
+2. Select Private type
+3. Fill name and submit
+4. Send message
+5. Verify message bubble",Private group created with message sent,Automated,
+TC-GRP-006,Groups Tab,High,Functional,Create password-protected group,"Verify creating a password group with password field",User on Groups tab,"1. Open create group form
+2. Select Password type
+3. Verify password input visible
+4. Fill password 'test123'
+5. Fill name and submit
+6. Send message
+7. Verify message bubble",Password group created,Automated,
+TC-GRP-007,Groups Tab,Medium,UI Validation,Group type selector defaults to Public,"Verify Public is selected by default and password field hidden",User on create group form,"1. Open create group form
+2. Verify Public selected by default
+3. Verify password field hidden
+4. Switch to Private — password still hidden
+5. Switch to Password — password field appears
+6. Switch to Public — password hidden again",Type selector behavior correct,Automated,
+TC-GRP-008,Groups Tab,Medium,UI Validation,Create group button visible in groups header,"Verify create group button exists in groups tab header",User on Groups tab,"1. Verify create group button visible
+2. Verify button is clickable",Create group button present,Automated,
+,,,,,,,,,,
+,,,,"═══ GROUP CHAT — MESSAGING ═══",,,,,,
+TC-GMSG-001,Group Chat,High,Functional,Send text message in group,"Verify sending text message in group chat",User in group chat,"1. Type message in composer
+2. Click Send
+3. Verify outgoing bubble appears",Text message sent in group,Automated,
+TC-GMSG-002,Group Chat,High,Functional,React edit and delete in group chat,"Verify message actions work in group context",User in group chat,"1. Send message and react with emoji — verify reaction
+2. Send message and edit — verify edited text
+3. Send message and delete — verify delete bubble",All message actions work in group,Automated,
+TC-GMSG-003,Group Chat,High,Functional,Send all media types in group,"Verify image video audio PDF upload in group",User in group chat,"1. Upload image — verify
+2. Upload video — verify
+3. Upload audio — verify
+4. Upload PDF — verify",All 4 media types work in group,Automated,
+TC-GMSG-004,Group Chat,Medium,Functional,Send emoji in group — pick and search,"Verify emoji picker works in group chat",User in group chat,"1. Open emoji picker and select emoji
+2. Send and verify
+3. Search emoji and send",Emoji works in group chat,Automated,
+TC-GMSG-005,Group Chat,Medium,Functional,Voice recording in group — simple and pause/resume,"Verify voice recording flows in group",User in group chat,"1. Record 2s → send → verify
+2. Record → pause → resume → send → verify",Voice recording works in group,Automated,
+TC-GMSG-006,Group Chat,Medium,Functional,Copy text message in group,"Verify copy action in group chat",User in group chat,"1. Send message
+2. Copy via submenu
+3. Verify clipboard content",Copy works in group,Automated,
+TC-GMSG-007,Group Chat,Medium,Functional,Direct reply in group,"Verify inline reply in group chat",User in group chat,"1. Send message
+2. Click Reply icon
+3. Type reply and send
+4. Verify reply bubble",Direct reply works in group,Automated,
+TC-GMSG-008,Group Chat,Medium,Functional,Message info panel in group,"Verify message info panel in group context",User in group chat,"1. Send message
+2. Verify receipt
+3. Open info panel
+4. Close info panel",Info panel works in group,Automated,
+TC-GMSG-009,Group Chat,Medium,Functional,Search message in group chat,"Verify in-chat search in group",User in group chat,"1. Open chat search
+2. Search for known message
+3. Close search",Search works in group chat,Automated,
+TC-GMSG-010,Group Chat,High,Functional,Send sticker in group chat,"Verify sticker button and sending in group",User in group chat,"1. Verify Sticker button visible
+2. Send a sticker
+3. Verify sticker bubble renders",Sticker works in group chat,Automated,
+,,,,,,,,,,
+,,,,"═══ GROUP CHAT — THREADS ═══",,,,,,
+TC-GTHR-001,Group Chat,High,Functional,Thread in group — full lifecycle,"Verify thread send/react/edit/delete/image/emoji/voice in group",User in group chat,"1. Send parent message and open thread
+2. Send text in thread
+3. React in thread
+4. Edit in thread
+5. Delete in thread
+6. Upload image in thread
+7. Send emoji in thread
+8. Record voice in thread
+9. Close thread",All thread actions work in group,Automated,
+,,,,,,,,,,
+,,,,"═══ GROUP CHAT — CALLS ═══",,,,,,
+TC-GCLL-001,Group Chat,Medium,Functional,Initiate group voice call and end,"Verify group voice call joins directly (no ringing)",User in group chat,"1. Click Voice call button
+2. Verify ongoing call overlay visible
+3. End the call
+4. Verify call bubble in chat",Group voice call initiated and ended,Automated,
+TC-GCLL-002,Group Chat,Medium,Functional,Initiate group video call and end,"Verify group video call joins directly",User in group chat,"1. Click Video call button
+2. Verify ongoing call overlay
+3. End the call
+4. Verify call bubble",Group video call initiated and ended,Automated,
+TC-GCLL-003,Group Chat,Medium,UI Validation,Call bubble appears in group chat after call,"Verify call bubble shows call type after ending",User ended a group call,"1. Verify call bubble visible
+2. Verify bubble shows 'Voice call' or 'Video call'",Call bubble renders correctly,Automated,
+,,,,,,,,,,
+,,,,"═══ GROUP CHAT — ADMIN ACTIONS ═══",,,,,,
+TC-GADM-001,Group Chat,High,Functional,Open group details panel,"Verify clicking header opens group info panel",User in group chat as owner,"1. Click message header
+2. Verify 'Group Info' header visible",Group details panel opens,Automated,
+TC-GADM-002,Group Chat,High,Functional,Group details shows owner badge and actions,"Verify owner badge and admin actions visible",User is group owner,"1. Open group details
+2. Verify owner badge visible
+3. Verify Add Members action
+4. Verify Delete Chat action
+5. Verify Delete and Exit action",Owner badge and admin actions present,Automated,
+TC-GADM-003,Group Chat,Medium,Functional,View Members and Banned Members tabs,"Verify both tabs exist in group details",Group details open,"1. Verify View Members tab
+2. Verify Banned Members tab
+3. Switch to Banned Members — verify empty state
+4. Switch back to View Members",Both member tabs work,Automated,
+TC-GADM-004,Group Chat,High,Functional,Add member to group,"Verify adding a user to the group",Group details open as owner,"1. Click Add Members
+2. Verify Users list appears
+3. Click user to select
+4. Click Add Member button
+5. Verify returned to Group Info
+6. Verify member in list",Member added successfully,Automated,
+TC-GADM-005,Group Chat,High,Functional,Kick member from group,"Verify removing a member via hover menu",Group has added member,"1. Hover on member row
+2. Click submenu icon
+3. Click Kick
+4. Verify member removed from list",Member kicked successfully,Automated,
+TC-GADM-006,Group Chat,Medium,Functional,Delete chat from group details (not exit),"Verify Delete Chat clears history without leaving group",Group details open,"1. Click Delete Chat
+2. Confirm in dialog
+3. Verify chat history cleared
+4. Verify still in group",Chat history cleared without leaving,Automated,
+TC-GADM-007,Group Chat,High,Functional,Delete and exit group,"Verify Delete and Exit removes group entirely",Group details open as owner,"1. Click Delete and Exit
+2. Confirm in dialog
+3. Verify returned to groups list or chats",Group deleted and user returned to list,Automated,
+TC-GADM-008,Group Chat,Medium,Functional,Delete and exit private group,"Verify deleting a private group",Private group exists,"1. Navigate to Groups tab
+2. Find and open private group
+3. Open details → Delete and Exit",Private group deleted,Automated,
+TC-GADM-009,Group Chat,Medium,Functional,Delete and exit password group,"Verify deleting a password group",Password group exists,"1. Navigate to Groups tab
+2. Find and open password group
+3. Open details → Delete and Exit",Password group deleted,Automated,
+TC-GADM-010,Group Chat,Medium,UI Validation,Banned members empty state message,"Verify Banned Members tab shows 'No banned members'",Group details open,"1. Switch to Banned Members tab
+2. Verify 'No banned members' text visible",Empty state message displayed,Automated,
+,,,,,,,,,,
+,,,,"═══ CALLS TAB ═══",,,,,,
+TC-CALL-001,Calls Tab,High,Functional,Navigate to Calls tab and verify list,"Verify call logs list renders with entries",User logged in with call history,"1. Navigate to Calls tab
+2. Verify 'Calls' header visible
+3. Verify call log entries exist
+4. Verify entry has avatar/name/date/direction icon/trailing icon",Call logs list renders with structure,Automated,
+TC-CALL-002,Calls Tab,Medium,Functional,Open call details panel,"Verify clicking call log entry opens details panel",Call log entries exist,"1. Click first call log entry
+2. Verify details panel visible
+3. Verify 'Call Details' header
+4. Verify user name and call info",Call details panel opens,Automated,
+TC-CALL-003,Calls Tab,Medium,Functional,Call details shows all content,"Verify details panel has status buttons tabs and info",Call details open,"1. Verify user name
+2. Verify status subtitle
+3. Verify call info row (direction/date/duration)
+4. Verify voice and video call buttons
+5. Verify Participants/Recording/History tabs",All detail content present,Automated,
+TC-CALL-004,Calls Tab,Medium,Functional,Participants tab content,"Verify Participants tab shows participant name and duration",Call details open,"1. Switch to Participants tab
+2. Verify participant name visible
+3. Verify duration visible",Participants tab correct,Automated,
+TC-CALL-005,Calls Tab,Low,Functional,Recording tab empty state,"Verify Recording tab shows 'No recording available'",Call details open,"1. Switch to Recording tab
+2. Verify empty state visible
+3. Verify 'No recording available' text",Recording tab shows empty state,Automated,
+TC-CALL-006,Calls Tab,Medium,Functional,History tab entries,"Verify History tab shows call history with direction and duration",Call details open,"1. Switch to History tab
+2. Verify history entries visible
+3. Verify direction title and subtitle
+4. Verify duration visible",History tab shows entries,Automated,
+TC-CALL-007,Calls Tab,Medium,Functional,Initiate voice call from details and cancel,"Verify voice call from call details panel",Call details open,"1. Click voice call button
+2. Verify outgoing call overlay
+3. Cancel call",Voice call from details works,Automated,
+TC-CALL-008,Calls Tab,Medium,Functional,Initiate video call from details and cancel,"Verify video call from call details panel",Call details open,"1. Click video call button
+2. Verify outgoing call overlay
+3. Cancel call",Video call from details works,Automated,
+TC-CALL-009,Calls Tab,Low,Functional,Switch between call log entries,"Verify switching entries updates details panel",Multiple call log entries,"1. Click first entry — verify details
+2. Click second entry — verify details update",Details panel updates on entry switch,Automated,
+TC-CALL-010,Calls Tab,Medium,UI Validation,Call log entry structure — avatar name date icons,"Verify each call log entry has all structural elements",Call log entries exist,"1. Verify avatar element
+2. Verify name text
+3. Verify date/time text
+4. Verify direction icon (incoming/outgoing/missed)
+5. Verify trailing icon (voice/video)",Call log entry structure complete,Automated,
+TC-CALL-011,Calls Tab,Low,Edge Case,Call details tabs switch correctly,"Verify active tab indicator changes when switching tabs",Call details open,"1. Click Participants — verify active
+2. Click Recording — verify active
+3. Click History — verify active",Tab active state updates correctly,Automated,
+,,,,,,,,,,
+,,,,"═══ COMPACT COMPOSER — STRUCTURE ═══",,,,,,
+TC-CMP-001,Composer,High,Functional,Compact composer visible with all buttons,"Verify composer has input and all 5 action buttons",User in a chat,"1. Verify compact composer wrapper visible
+2. Verify contenteditable input with placeholder
+3. Verify Attach button
+4. Verify Emoji button
+5. Verify Sticker button
+6. Verify Voice Recording button
+7. Verify Send Message button",Compact composer with all buttons visible,Automated,
+TC-CMP-002,Composer,High,Functional,Formatting toolbar has all 10 buttons,"Verify formatting toolbar shows all formatting options",User in a chat,"1. Verify formatting toolbar visible
+2. Verify Bold button
+3. Verify Italic button
+4. Verify Underline button
+5. Verify Strikethrough button
+6. Verify Link button
+7. Verify Numbered List button
+8. Verify Bulleted List button
+9. Verify Blockquote button
+10. Verify Code button
+11. Verify Code Block button",All 10 formatting buttons present,Automated,
+TC-CMP-003,Composer,Medium,Functional,Composer input is contenteditable with placeholder,"Verify input is editable focusable and has placeholder",User in a chat,"1. Verify input is editable
+2. Click input — verify focused
+3. Type text — verify not empty
+4. Clear — verify empty",Input interactive with placeholder,Automated,
+,,,,,,,,,,
+,,,,"═══ COMPACT COMPOSER — FORMATTING ═══",,,,,,
+TC-FMT-001,Composer,High,Functional,Bold formatting — toggle send verify,"Verify bold button sends bold formatted text",User in a chat,"1. Click Bold button
+2. Type text
+3. Send message
+4. Verify bubble contains bold/strong tag",Bold text rendered in bubble,Automated,
+TC-FMT-002,Composer,High,Functional,Italic formatting,"Verify italic formatting works",User in a chat,"1. Click Italic
+2. Type and send
+3. Verify em/i tag in bubble",Italic text rendered,Automated,
+TC-FMT-003,Composer,Medium,Functional,Underline formatting,"Verify underline formatting",User in a chat,"1. Click Underline
+2. Type and send
+3. Verify u tag in bubble",Underline text rendered,Automated,
+TC-FMT-004,Composer,Medium,Functional,Strikethrough formatting,"Verify strikethrough formatting",User in a chat,"1. Click Strikethrough
+2. Type and send
+3. Verify s/del tag in bubble",Strikethrough text rendered,Automated,
+TC-FMT-005,Composer,Medium,Functional,Code inline formatting,"Verify inline code formatting",User in a chat,"1. Click Code
+2. Type and send
+3. Verify code tag in bubble",Inline code rendered,Automated,
+TC-FMT-006,Composer,Medium,Functional,Code Block formatting,"Verify code block formatting",User in a chat,"1. Click Code Block
+2. Type and send
+3. Verify pre/code tag in bubble",Code block rendered,Automated,
+TC-FMT-007,Composer,Medium,Functional,Blockquote formatting,"Verify blockquote formatting",User in a chat,"1. Click Blockquote
+2. Type and send
+3. Verify blockquote tag in bubble",Blockquote rendered,Automated,
+TC-FMT-008,Composer,Medium,Functional,Numbered List formatting,"Verify ordered list with multiple items",User in a chat,"1. Click Numbered List
+2. Type first item
+3. Press Enter
+4. Type second item
+5. Send
+6. Verify ordered list in bubble",Numbered list rendered,Automated,
+TC-FMT-009,Composer,Medium,Functional,Bulleted List formatting,"Verify unordered list formatting",User in a chat,"1. Click Bulleted List
+2. Type items
+3. Send
+4. Verify unordered list in bubble",Bulleted list rendered,Automated,
+TC-FMT-010,Composer,Medium,Functional,Link insertion on selected text,"Verify hyperlink insertion",User in a chat,"1. Type text
+2. Select all
+3. Click Link
+4. Enter URL
+5. Send
+6. Verify link in bubble",Link rendered in bubble,Automated,
+TC-FMT-011,Composer,Medium,Edge Case,Multiple formats combined — bold + italic,"Verify combining bold and italic in one message",User in a chat,"1. Click Bold then Italic
+2. Type text
+3. Send
+4. Verify both formats in bubble",Combined formatting rendered,Automated,
+TC-FMT-012,Composer,Medium,Edge Case,Undo formatting mid-typing,"Verify toggling formatting off mid-sentence",User in a chat,"1. Type normal text
+2. Enable bold — type bold text
+3. Disable bold — type normal text
+4. Send
+5. Verify mixed formatting in bubble",Mixed formatted message sent,Automated,
+TC-FMT-013,Composer,Medium,Edge Case,Formatting resets after send,"Verify formatting state resets for next message",User in a chat,"1. Enable bold and send message
+2. Check bold aria-pressed is false
+3. Type new message — should be unformatted",Formatting resets after send,Automated,
+TC-FMT-014,Composer,Low,Edge Case,Empty formatted message cannot send,"Verify enabling formatting without text doesn't send",User in a chat,"1. Click Bold
+2. Don't type anything
+3. Press Enter
+4. Verify no new bubble",Empty formatted message not sent,Automated,
+TC-FMT-015,Composer,Medium,Functional,Keyboard shortcuts — Ctrl+B Ctrl+I Ctrl+U,"Verify keyboard shortcuts toggle formatting",User in a chat,"1. Press Ctrl/Cmd+B — verify bold toggles
+2. Press Ctrl/Cmd+I — verify italic toggles
+3. Press Ctrl/Cmd+U — verify underline toggles",Keyboard shortcuts work,Automated,
+TC-FMT-016,Composer,Medium,Edge Case,Long message with mixed formatting,"Verify message with bold italic and code all in one",User in a chat,"1. Type with bold then italic then code
+2. Send
+3. Verify all formatted sections in bubble",All formatted sections present,Automated,
+TC-FMT-017,Composer,Medium,Functional,Formatting toolbar in group chat,"Verify same toolbar exists in group chat composer",User in group chat,"1. Open group chat
+2. Verify formatting toolbar visible
+3. Verify all 10 buttons present",Formatting toolbar same in group,Automated,
+TC-FMT-018,Composer,Low,UI Validation,Formatting buttons aria-pressed states,"Verify aria-pressed attribute on formatting buttons",User in a chat,"1. Check Bold/Italic/Underline/Strikethrough have aria-pressed
+2. Verify value is 'true' or 'false'",Aria-pressed attributes correct,Automated,
+TC-FMT-019,Composer,Low,UI Validation,Formatting toolbar buttons have aria attributes,"Verify all 10 buttons have aria-label and aria-pressed/disabled",User in a chat,"1. Check each button for aria-label
+2. Verify aria-pressed or aria-disabled exists",Aria attributes correct for accessibility,Automated,
+TC-FMT-020,Composer,Low,UI Validation,Send button state changes with content,"Verify send button visual state reflects composer content",User in a chat,"1. Check send button class when empty
+2. Type text — check class changes",Send button state reflects content,Automated,
+TC-FMT-021,Composer,Low,Edge Case,Composer preserves text on tab switch,"Verify typed unsent text behavior on tab switch",User in a chat,"1. Type text without sending
+2. Switch to Users tab
+3. Re-open same chat
+4. Check if text preserved or cleared",No crash on tab switch,Automated,
+TC-FMT-022,Composer,Medium,Functional,Formatted message renders correctly in bubble,"Verify bold text renders with strong/b tag in bubble",User in a chat,"1. Send bold text
+2. Check bubble innerHTML for strong/b tag or font-weight",Formatted text visible in bubble,Automated,
+TC-FMT-023,Composer,Medium,Functional,All composer action buttons visible and enabled,"Verify all 5 action buttons have icons and are enabled",User in a chat,"1. Check Attach/Emoji/Sticker/Voice/Send buttons
+2. Verify each visible enabled and has icon",All action buttons functional,Automated,
+,,,,,,,,,,
+,,,,"═══ VISUAL VALIDATION ═══",,,,,,
+TC-VIS-001,Visual,High,UI Validation,Tab bar — icons text active state dimensions,"Verify tab bar renders with 4 tabs icons correct styling and dimensions",User is logged in,"1. Verify 4 tabs visible (Chats Calls Users Groups)
+2. Verify 4 tab icons with non-zero dimensions
+3. Verify tab text font: Roboto 12px medium
+4. Verify active tab has accent color rgb(104 82 214)
+5. Verify tab icon height ~32px",Tab bar renders correctly,Automated,
+TC-VIS-002,Visual,High,UI Validation,Conversation list — avatars titles subtitles dates,"Verify conversation list visual styling",User logged in with conversations,"1. Verify list item height ~72px with 12px padding
+2. Verify avatar: circular (border-radius 1000px) 48px purple bg
+3. Verify avatar contains img with src
+4. Verify title: Roboto 16px medium dark text
+5. Verify date: 12px gray text
+6. Verify white background",Conversation list styled correctly,Automated,
+TC-VIS-003,Visual,Medium,UI Validation,Search bar — input styling and placeholder,"Verify search input styling",User is logged in,"1. Verify search input font: Roboto 16px
+2. Verify placeholder text is 'Search'",Search bar styled correctly,Automated,
+TC-VIS-004,Visual,High,UI Validation,Message header — avatar name status icons,"Verify message header visual elements",Chat is open,"1. Verify header avatar: 40px circular
+2. Verify title: Roboto 16px medium
+3. Verify subtitle: 12px muted text
+4. Verify voice/video/search buttons visible",Message header styled correctly,Automated,
+TC-VIS-005,Visual,High,UI Validation,Message bubbles — styling and receipt,"Verify outgoing message bubble styling",Chat is open,"1. Send test message
+2. Verify bubble visible with dimensions
+3. Verify text readable (non-zero font)
+4. Verify receipt icon visible
+5. Check timestamp presence",Message bubbles styled correctly,Automated,
+TC-VIS-006,Visual,Medium,UI Validation,Users list — avatars names section headers,"Verify users list visual elements",User on Users tab,"1. Verify circular avatars
+2. Verify name typography: Roboto 16px medium
+3. Check section headers (A-Z)
+4. Verify search placeholder 'Search'",Users list styled correctly,Automated,
+TC-VIS-007,Visual,Medium,UI Validation,Groups list — avatars names member count,"Verify groups list visual elements",User on Groups tab,"1. Verify groups list has items
+2. Verify circular avatars
+3. Verify name typography
+4. Verify create group button visible
+5. Verify search input visible",Groups list styled correctly,Automated,
+TC-VIS-008,Visual,High,UI Validation,Responsive — elements scale at different viewports,"Verify app renders at desktop/tablet/mobile/small mobile",User is logged in,"1. Desktop 1280x720 — tab bar visible
+2. Tablet 768x1024 — app renders
+3. Mobile 375x667 — app renders
+4. Small mobile 320x568 — no overflow
+5. Restore desktop viewport",App responsive at all viewports,Automated,
+TC-VIS-009,Visual,Medium,UI Validation,Composer styling — input and buttons,"Verify composer visual elements",Chat is open,"1. Verify composer input area
+2. Verify placeholder text
+3. Verify attach/emoji/voice buttons visible
+4. Verify buttons have icon masks",Composer styled correctly,Not Automated,
+TC-VIS-010,Visual,Low,UI Validation,Avatar fallback when no image,"Verify avatar shows initials or default when no image src",User list with users without avatars,"1. Check avatar elements
+2. Verify fallback (initials or default icon) when no img src",Avatar fallback renders,Not Automated,
+,,,,,,,,,,
+,,,,"═══ DEEP VALIDATION — ATTRIBUTES & DOM ═══",,,,,,
+TC-DEEP-001,Deep Validation,High,Accessibility,HTML attributes — src title placeholder contenteditable,"Verify key HTML attributes on interactive elements",User is logged in,"1. Verify avatar images have src attribute
+2. Verify search input has placeholder='Search'
+3. Verify composer has data-placeholder
+4. Verify all buttons have title attributes
+5. Verify composer has contenteditable",All HTML attributes present,Automated,
+TC-DEEP-002,Deep Validation,High,UI Validation,CSS properties — fonts colors dimensions,"Verify CSS properties match design specs",User is logged in,"1. Verify tab text: font-size 12px font-weight 500
+2. Verify conversation title: font-size 16px font-weight 500
+3. Verify avatar: border-radius 1000px
+4. Verify list item: background-color white",CSS properties correct,Automated,
+TC-DEEP-003,Deep Validation,Medium,UI Validation,CSS classes — active states and component classes,"Verify CSS class names on active/interactive elements",User is logged in,"1. Verify active tab has 'active' class
+2. Verify composer input has correct class
+3. Verify outgoing bubble has 'cometchat-message-bubble-outgoing'",CSS classes applied correctly,Automated,
+TC-DEEP-004,Deep Validation,Medium,Functional,Button states — enabled/disabled validation,"Verify all composer and header buttons are enabled",Chat is open,"1. Verify Attach button enabled
+2. Verify Emoji button enabled
+3. Verify Voice Recording button enabled
+4. Verify Voice call button enabled
+5. Verify Video call button enabled
+6. Verify Search button enabled",All buttons enabled and interactive,Automated,
+TC-DEEP-005,Deep Validation,Medium,Functional,Input states — focus value editable empty,"Verify input field states",Chat is open,"1. Verify composer is editable
+2. Click composer — verify focused
+3. Clear — verify empty
+4. Type text — verify not empty
+5. Verify search input editable",Input states work correctly,Automated,
+TC-DEEP-006,Deep Validation,Medium,UI Validation,Element counts — exact counts where expected,"Verify exact element counts",User is logged in,"1. Verify exactly 4 bottom nav tabs
+2. Verify exactly 4 tab icons
+3. Verify exactly 4 tab text labels
+4. Verify Users list has exactly 4 sample users",Element counts match expected,Automated,
+TC-DEEP-007,Deep Validation,Low,Technical,DOM presence — attached/detached states,"Verify DOM attachment states",User is logged in,"1. Verify tab component attached
+2. Check emoji keyboard detached when closed
+3. Open emoji — verify attached
+4. Close — verify state",DOM presence states correct,Automated,
+TC-DEEP-008,Deep Validation,High,Accessibility,ARIA attributes — alt text roles,"Verify accessibility attributes on interactive elements",User is logged in,"1. Verify avatar images have alt attribute
+2. Verify buttons use <button> tag
+3. Verify search inputs have type attribute
+4. Verify buttons not aria-hidden='true'",Accessibility attributes present,Automated,
+TC-DEEP-009,Deep Validation,High,Accessibility,Keyboard navigation — Tab Enter Escape,"Verify keyboard interactions",Chat is open,"1. Click composer — verify focused
+2. Press Tab — focus moves
+3. Type text and press Enter — message sent
+4. Open emoji — Escape closes
+5. Open attach — Escape closes
+6. Shift+Enter adds newline",Keyboard navigation works,Automated,
+TC-DEEP-010,Deep Validation,Medium,UI Validation,Overlay stacking — popups above content,"Verify popups render above main content",Chat is open,"1. Open emoji keyboard — verify z-index >= 0
+2. Open attach menu — verify above composer",Popups stack correctly,Automated,
+TC-DEEP-011,Deep Validation,Medium,Functional,Scroll — message list scrolls to bottom on new message,"Verify auto-scroll behavior",Chat is open with messages,"1. Send message — verify scroll near bottom
+2. Scroll to top — verify scrollTop < 100",Auto-scroll works,Automated,
+TC-DEEP-012,Deep Validation,High,Integration,Network — API calls return correct responses,"Verify API calls from UI return HTTP 200",User is logged in,"1. Send message — verify POST /messages returns 200
+2. Navigate to Users — verify GET /users returns 200
+3. Navigate to Groups — verify GET /groups returns 200",API calls return correct status,Automated,
+TC-DEEP-013,Deep Validation,Medium,UI Validation,Text content — partial text matching across UI,"Verify text content renders correctly",User is logged in,"1. Verify tab labels: Chats Calls Users Groups
+2. Verify Users list contains 'George Alan' and 'Susan Marie'
+3. Verify sent message bubble contains text",Text content renders correctly,Automated,
+,,,,,,,,,,
+,,,,"═══ NETWORK FAILURE TESTS ═══",,,,,,
+TC-NET-001,Network,High,Negative,Send message while offline — no crash,"Verify app handles offline message send gracefully",User in chat,"1. Go offline
+2. Try to send message
+3. Verify no crash
+4. Go back online",App handles offline send gracefully,Automated,
+TC-NET-002,Network,High,Functional,App recovers after offline then online,"Verify app recovers network connectivity",User is logged in,"1. Go offline
+2. Wait 2 seconds
+3. Go back online
+4. Verify app functional",App recovers from offline,Automated,
+TC-NET-003,Network,Medium,Functional,Conversation list loads after network restore,"Verify conversation list loads after network recovery",User went offline then online,"1. Go offline then online
+2. Navigate to Chats tab
+3. Verify conversations load",Conversations load after recovery,Automated,
+TC-NET-004,Network,Medium,Negative,Message API returns 500 — app handles gracefully,"Verify app handles server error on message send",User in chat,"1. Mock message API to return 500
+2. Try to send message
+3. Verify no crash",App handles 500 error,Automated,
+TC-NET-005,Network,Medium,Negative,Message API returns 408 timeout,"Verify app handles timeout response",User in chat,"1. Mock message API to return 408
+2. Try to send message
+3. Verify no crash",App handles timeout,Automated,
+TC-NET-006,Network,Medium,Negative,Message API returns 429 rate limit,"Verify app handles rate limiting",User in chat,"1. Mock message API to return 429
+2. Try to send message
+3. Verify no crash",App handles rate limit,Automated,
+TC-NET-007,Network,Medium,Functional,Block image CDN — chat still works,"Verify chat functions when images fail to load",User in chat,"1. Block image CDN
+2. Verify chat still works
+3. Verify images show placeholder",Chat works without image CDN,Automated,
+TC-NET-008,Network,Medium,Functional,Slow network (2s delay) — messages still send,"Verify messages send on slow network",User in chat,"1. Add 2s network delay
+2. Send message
+3. Verify message eventually appears",Messages send on slow network,Automated,
+TC-NET-009,Network,Medium,Functional,Block messages API — other features work,"Verify non-message features work when messages API blocked",User is logged in,"1. Block messages API
+2. Navigate tabs
+3. Verify Users/Groups/Calls tabs work",Other features work without messages API,Automated,
+TC-NET-010,Network,Medium,Negative,Rapid offline/online toggle — app stable,"Verify app handles rapid network changes",User is logged in,"1. Toggle offline/online rapidly 5 times
+2. Verify app still functional",App stable after rapid network changes,Automated,
+TC-NET-011,Network,Medium,Functional,Send message offline then restore — delivers,"Verify queued message delivers after reconnect",User in chat,"1. Go offline
+2. Send message
+3. Go online
+4. Verify message delivers",Offline message delivers on reconnect,Automated,
+TC-NET-012,Network,Low,Functional,Users tab loads after API failure recovery,"Verify Users tab recovers from API failure",User is logged in,"1. Mock users API failure
+2. Restore API
+3. Navigate to Users tab
+4. Verify users load",Users tab recovers,Automated,
+TC-NET-013,Network,Low,Functional,Groups tab loads after API failure recovery,"Verify Groups tab recovers from API failure",User is logged in,"1. Mock groups API failure
+2. Restore API
+3. Navigate to Groups tab
+4. Verify groups load",Groups tab recovers,Automated,
+TC-NET-014,Network,Low,Functional,Calls tab loads after API failure recovery,"Verify Calls tab recovers from API failure",User is logged in,"1. Mock calls API failure
+2. Restore API
+3. Navigate to Calls tab
+4. Verify calls load",Calls tab recovers,Automated,
+TC-NET-015,Network,Medium,Negative,WebSocket disconnect — app handles gracefully,"Verify app handles WebSocket disconnection",User is logged in,"1. Simulate WebSocket disconnect
+2. Verify no crash
+3. Verify app still navigable",App handles WebSocket disconnect,Automated,
+,,,,,,,,,,
+,,,,"═══ API TESTS — AUTH & HEALTH ═══",,,,,,
+TC-API-AUTH-001,API Auth,High,Functional,Valid API key returns 200 on /users,"Verify authenticated API call succeeds",Valid API credentials in .env,"1. GET /users with valid appid and apikey
+2. Verify status 200",API returns 200 with valid credentials,Automated,
+TC-API-AUTH-002,API Auth,Medium,Negative,Invalid API key returns 401,"Verify invalid API key is rejected",Invalid API key,"1. GET /users with invalid apikey
+2. Verify status 401 or error",API rejects invalid key,Automated,
+TC-API-AUTH-003,API Auth,Medium,Negative,Missing appid returns error,"Verify missing appid header causes error",No appid header,"1. GET /users without appid header
+2. Verify error response",API rejects missing appid,Automated,
+TC-API-AUTH-004,API Auth,Medium,Functional,API responds within 5 seconds,"Verify /users endpoint responds within SLA",Valid credentials,"1. GET /users
+2. Measure response time
+3. Verify < 5000ms",API responds within 5s,Automated,
+,,,,,,,,,,
+,,,,"═══ API TESTS — USERS ═══",,,,,,
+TC-API-USR-001,API Users,High,Functional,List users — 200 with array,"Verify listing users returns array",Valid credentials,"1. GET /users
+2. Verify status 200
+3. Verify body is array",Users list returned,Automated,
+TC-API-USR-002,API Users,Medium,Functional,Get user by UID — 200 with data,"Verify getting specific user returns user data",Valid UID exists,"1. GET /users/{uid}
+2. Verify status 200
+3. Verify user data in response",User data returned,Automated,
+TC-API-USR-003,API Users,Medium,Negative,Get non-existent user — 404,"Verify getting non-existent user returns 404",Invalid UID,"1. GET /users/nonexistent-uid
+2. Verify status 404",404 for non-existent user,Automated,
+TC-API-USR-004,API Users,Medium,Functional,User response has uid name status fields,"Verify user response schema has required fields",Valid user exists,"1. GET /users/{uid}
+2. Verify response has uid field
+3. Verify response has name field
+4. Verify response has status field",User response schema correct,Automated,
+TC-API-USR-005,API Users,Low,Functional,Create user via API,"Verify creating a new user via REST API",Valid credentials,"1. POST /users with uid and name
+2. Verify status 200
+3. Verify user created",User created via API,Not Automated,
+TC-API-USR-006,API Users,Low,Functional,Update user via API,"Verify updating user data via REST API",User exists,"1. PUT /users/{uid} with updated data
+2. Verify status 200",User updated via API,Not Automated,
+TC-API-USR-007,API Users,Low,Functional,Delete user via API,"Verify deleting a user via REST API",User exists,"1. DELETE /users/{uid}
+2. Verify status 200",User deleted via API,Not Automated,
+TC-API-USR-008,API Users,Low,Functional,Block users via API,"Verify blocking users via onBehalfOf header",Two users exist,"1. POST /users/blockedusers with onBehalfOf header
+2. Verify status 200",Users blocked via API,Not Automated,
+TC-API-USR-009,API Users,Low,Functional,Unblock users via API,"Verify unblocking users via API",Users are blocked,"1. DELETE /users/blockedusers with onBehalfOf header
+2. Verify status 200",Users unblocked via API,Not Automated,
+,,,,,,,,,,
+,,,,"═══ API TESTS — GROUPS ═══",,,,,,
+TC-API-GRP-001,API Groups,High,Functional,List groups — 200 with array,"Verify listing groups returns array",Valid credentials,"1. GET /groups
+2. Verify status 200
+3. Verify body is array",Groups list returned,Automated,
+TC-API-GRP-002,API Groups,Medium,Functional,Create public group — 200,"Verify creating a public group via API",Valid credentials,"1. POST /groups with guid name type=public
+2. Verify status 200",Public group created,Automated,
+TC-API-GRP-003,API Groups,Medium,Functional,Get group by GUID — 200,"Verify getting specific group returns data",Group exists,"1. GET /groups/{guid}
+2. Verify status 200",Group data returned,Automated,
+TC-API-GRP-004,API Groups,Medium,Functional,Add member to group — 200,"Verify adding member via API",Group exists,"1. POST /groups/{guid}/members with participants
+2. Verify status 200",Member added via API,Automated,
+TC-API-GRP-005,API Groups,Medium,Functional,Get group members — 200 with array,"Verify listing group members",Group has members,"1. GET /groups/{guid}/members
+2. Verify status 200
+3. Verify body is array",Members list returned,Automated,
+TC-API-GRP-006,API Groups,Medium,Functional,Kick member from group — 200,"Verify removing member via API",Group has added member,"1. DELETE /groups/{guid}/members/{uid}
+2. Verify status 200",Member kicked via API,Automated,
+TC-API-GRP-007,API Groups,Medium,Functional,Delete group — 200,"Verify deleting group via API",Group exists,"1. DELETE /groups/{guid}
+2. Verify status 200",Group deleted via API,Automated,
+TC-API-GRP-008,API Groups,Medium,Negative,Get deleted group — 404,"Verify getting deleted group returns 404",Group was deleted,"1. GET /groups/{deleted-guid}
+2. Verify status 404",404 for deleted group,Automated,
+TC-API-GRP-009,API Groups,Low,Functional,Create private group via API,"Verify creating private group",Valid credentials,"1. POST /groups with type=private
+2. Verify status 200",Private group created via API,Not Automated,
+TC-API-GRP-010,API Groups,Low,Functional,Create password group via API,"Verify creating password group",Valid credentials,"1. POST /groups with type=password and password field
+2. Verify status 200",Password group created via API,Not Automated,
+,,,,,,,,,,
+,,,,"═══ API TESTS — MESSAGES ═══",,,,,,
+TC-API-MSG-001,API Messages,High,Functional,Send text message to user — 200,"Verify sending text message via API",Valid credentials and user exists,"1. POST /messages with receiver receiverType=user type=text
+2. Verify status 200",Message sent via API,Automated,
+TC-API-MSG-002,API Messages,Medium,Functional,Response contains message ID and text,"Verify message response has id and text data",Message sent,"1. Send message via API
+2. Verify response has message ID
+3. Verify response has text data",Message response schema correct,Automated,
+TC-API-MSG-003,API Messages,Medium,Functional,Get user messages — 200 with array,"Verify listing user messages",Messages exist,"1. GET /users/{uid}/messages
+2. Verify status 200
+3. Verify body is array",Messages list returned,Automated,
+TC-API-MSG-004,API Messages,Medium,Functional,Send text message to group — 200,"Verify sending message to group via API",Group exists,"1. POST /messages with receiverType=group
+2. Verify status 200",Group message sent via API,Not Automated,
+TC-API-MSG-005,API Messages,Medium,Functional,Delete a message — 200,"Verify deleting message via API",Message exists,"1. DELETE /messages/{messageId}
+2. Verify status 200",Message deleted via API,Automated,
+TC-API-MSG-006,API Messages,Low,Functional,Get group messages — 200,"Verify listing group messages",Group has messages,"1. GET /groups/{guid}/messages
+2. Verify status 200",Group messages returned,Not Automated,
+,,,,,,,,,,
+,,,,"═══ INTEGRATION TESTS — 1:1 CHAT FLOW ═══",,,,,,
+TC-INT-001,Integration,High,Integration,Login → open chat → send text → verify,"Verify full 1:1 chat flow end-to-end",App running,"1. Login
+2. Open chat with user
+3. Send text message
+4. Verify bubble appears",Full 1:1 chat flow works,Automated,
+TC-INT-002,Integration,Medium,Integration,Send image → verify image bubble,"Verify image upload in integration flow",User in chat,"1. Upload image
+2. Verify image bubble",Image upload integration works,Automated,
+TC-INT-003,Integration,Medium,Integration,React → edit → delete message flow,"Verify message action lifecycle",User in chat,"1. Send message
+2. React with emoji
+3. Edit message
+4. Delete message",Message action lifecycle works,Automated,
+TC-INT-004,Integration,Medium,Integration,Open thread → send reply → close,"Verify thread lifecycle",User in chat,"1. Send parent message
+2. Open thread
+3. Send reply in thread
+4. Close thread",Thread lifecycle works,Automated,
+TC-INT-005,Integration,Medium,Integration,Search in chat → find → close,"Verify search integration",User in chat with messages,"1. Open search
+2. Search for message
+3. Close search",Search integration works,Automated,
+TC-INT-006,Integration,Medium,Integration,Voice call → cancel → video call → cancel,"Verify call lifecycle",User in chat,"1. Initiate voice call → cancel
+2. Initiate video call → cancel",Call lifecycle works,Automated,
+TC-INT-007,Integration,Medium,Integration,User details → block → unblock → close,"Verify user details lifecycle",User in chat,"1. Open details
+2. Block user
+3. Unblock user
+4. Close details",User details lifecycle works,Automated,
+TC-INT-008,Integration,Medium,Integration,Delete chat → verify removed,"Verify chat deletion integration",User in chat,"1. Open details
+2. Delete chat
+3. Verify removed",Chat deletion works,Automated,
+TC-INT-009,Integration,High,Integration,Logout → re-login → verify session,"Verify auth lifecycle",User logged in,"1. Logout
+2. Re-login
+3. Verify Chats visible",Auth lifecycle works,Automated,
+,,,,,,,,,,
+,,,,"═══ INTEGRATION TESTS — GROUP FLOW ═══",,,,,,
+TC-INT-GRP-001,Integration,High,Integration,Create public group → send message,"Verify group creation and messaging",User logged in,"1. Create public group
+2. Send message
+3. Verify bubble",Group creation flow works,Automated,
+TC-INT-GRP-002,Integration,Medium,Integration,Send image + emoji + voice in group,"Verify media in group integration",User in group,"1. Upload image
+2. Send emoji
+3. Record voice",Group media flow works,Automated,
+TC-INT-GRP-003,Integration,Medium,Integration,React → edit → delete in group,"Verify message actions in group",User in group,"1. React to message
+2. Edit message
+3. Delete message",Group message actions work,Automated,
+TC-INT-GRP-004,Integration,Medium,Integration,Thread in group → reply → close,"Verify thread in group",User in group,"1. Open thread
+2. Send reply
+3. Close thread",Group thread works,Automated,
+TC-INT-GRP-005,Integration,Medium,Integration,Group voice call → end → video call → end,"Verify group calls",User in group,"1. Voice call → end
+2. Video call → end",Group calls work,Automated,
+TC-INT-GRP-006,Integration,Medium,Integration,Group details → add member → kick,"Verify group admin actions",User is group owner,"1. Open details
+2. Add member
+3. Kick member",Group admin actions work,Automated,
+TC-INT-GRP-007,Integration,Medium,Integration,Create private group → send message,"Verify private group flow",User logged in,"1. Create private group
+2. Send message",Private group flow works,Automated,
+TC-INT-GRP-008,Integration,Medium,Integration,Create password group → send message,"Verify password group flow",User logged in,"1. Create password group
+2. Send message",Password group flow works,Automated,
+TC-INT-GRP-009,Integration,Medium,Integration,Delete and exit all test groups (cleanup),"Verify cleanup of test groups",Test groups exist,"1. Find and delete all test groups",Test groups cleaned up,Automated,
+,,,,,,,,,,
+,,,,"═══ CROSS-FEATURE EDGE CASES ═══",,,,,,
+TC-EDGE-001,Edge Cases,Medium,Edge Case,All features work after page reload,"Verify sticker/mark unread/report survive page reload",User in chat,"1. Reload page
+2. Re-open chat
+3. Verify Sticker button visible
+4. Open sticker keyboard — works
+5. Hover incoming message — submenu works",Features functional after reload,Automated,
+TC-EDGE-002,Edge Cases,Medium,Edge Case,File upload cancel doesn't break composer,"Verify attach cancel leaves composer functional",User in chat,"1. Open attach menu
+2. Press Escape
+3. Send text message
+4. Verify message sent",Composer works after attach cancel,Automated,
+TC-EDGE-003,Edge Cases,Medium,Edge Case,Responsive mobile viewport navigation,"Verify app works at mobile viewport size",User logged in,"1. Resize to 375x667
+2. Verify tabs visible
+3. Navigate between tabs
+4. Restore to 1280x720",App works at mobile size,Automated,
+TC-EDGE-004,Edge Cases,Low,Edge Case,Multiple rapid message sends,"Verify sending messages rapidly doesn't cause issues",User in chat,"1. Send 5 messages rapidly
+2. Verify all 5 bubbles appear
+3. Verify correct order",Rapid sends handled correctly,Not Automated,
+TC-EDGE-005,Edge Cases,Low,Edge Case,Open and close all panels rapidly,"Verify rapid panel open/close doesn't crash",User in chat,"1. Open emoji → close
+2. Open sticker → close
+3. Open attach → close
+4. Open thread → close
+5. Open details → close",Rapid panel toggling stable,Not Automated,
+TC-EDGE-006,Edge Cases,Low,Edge Case,Switch between all 4 tabs rapidly,"Verify rapid tab switching doesn't crash",User logged in,"1. Click Chats → Users → Groups → Calls rapidly
+2. Repeat 3 times
+3. Verify app stable",Rapid tab switching stable,Not Automated,
+TC-EDGE-007,Edge Cases,Medium,Edge Case,Send message in chat then switch tab and return,"Verify message persists after tab switch",User in chat,"1. Send message
+2. Switch to Users tab
+3. Return to Chats tab
+4. Open same conversation
+5. Verify message still visible",Message persists after tab switch,Not Automated,
+TC-EDGE-008,Edge Cases,Low,Edge Case,Open two keyboards simultaneously (emoji + sticker),"Verify only one keyboard visible at a time",User in chat,"1. Open emoji keyboard
+2. Open sticker keyboard
+3. Verify only sticker visible
+4. Open emoji again
+5. Verify only emoji visible",Mutual exclusion between keyboards,Automated,
+TC-EDGE-009,Edge Cases,Medium,Edge Case,Error overlay auto-dismiss during test,"Verify runtime error overlays are automatically dismissed",User in chat with potential errors,"1. Trigger action that may cause overlay
+2. Verify overlay auto-dismissed
+3. Verify app still functional",Error overlays handled automatically,Automated,
+TC-EDGE-010,Edge Cases,Low,Edge Case,Composer focus after closing panels,"Verify composer regains focus after closing emoji/sticker/attach panels",User in chat,"1. Open emoji keyboard → close
+2. Click composer — verify focused
+3. Open attach menu → close
+4. Click composer — verify focused",Composer focusable after panel close,Not Automated,
+TC-EDGE-011,Edge Cases,Low,Edge Case,Message with HTML tags — XSS prevention,"Verify HTML tags in messages are escaped not rendered",User in chat,"1. Send message containing '<script>alert(1)</script>'
+2. Verify text displayed as-is not executed
+3. Verify no script execution",HTML escaped — no XSS,Not Automated,
+TC-EDGE-012,Edge Cases,Medium,Edge Case,Group member count updates after add/kick,"Verify member count subtitle updates in groups list",User is group owner,"1. Note member count
+2. Add member
+3. Verify count incremented
+4. Kick member
+5. Verify count decremented",Member count updates dynamically,Not Automated,
+TC-EDGE-013,Edge Cases,Low,Edge Case,Conversation list empty state,"Verify app handles no conversations gracefully",New user with no conversations,"1. Login as user with no conversations
+2. Verify Chats tab shows empty state or no crash",Empty conversation list handled,Not Automated,
+TC-EDGE-014,Edge Cases,Low,Edge Case,Groups list empty state,"Verify app handles no groups gracefully",No groups exist,"1. Navigate to Groups tab
+2. Verify empty state or no crash",Empty groups list handled,Not Automated,
+TC-EDGE-015,Edge Cases,Low,Edge Case,Calls list empty state,"Verify app handles no call logs gracefully",No call history,"1. Navigate to Calls tab
+2. Verify empty state or no crash",Empty calls list handled,Not Automated,
+TC-EDGE-016,Edge Cases,Medium,Edge Case,Send message while recording — recording cancelled,"Verify text send cancels active recording",User recording voice,"1. Start voice recording
+2. Cancel recording via delete button
+3. Send text message
+4. Verify text sent successfully",Recording cancelled before text send,Automated,
+TC-EDGE-017,Edge Cases,Low,Edge Case,Thread panel and main chat independent,"Verify actions in thread don't affect main chat bubbles",User with thread open,"1. Send message in main chat
+2. Open thread
+3. Send message in thread
+4. Verify main chat and thread have separate bubble counts",Thread and main chat independent,Not Automated,
