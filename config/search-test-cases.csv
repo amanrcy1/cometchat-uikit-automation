@@ -1,0 +1,116 @@
+Test Case ID,Module,Priority,Type,Title,Description,Preconditions,Test Steps,Expected Result,Status,Comments
+,,,,,,,,,,
+,,,,"═══ 1:1 CHAT — MESSAGE SEARCH ═══",,,,,,
+TC-SEARCH-001,Search,High,Functional,Header search button visible and clickable,"Verify the search icon is present in the 1:1 chat header and is interactive",User is logged in and a 1:1 chat with George Alan is open,"1. Open a 1:1 chat
+2. Locate the Search button in the chat header
+3. Verify it is visible
+4. Verify it is enabled and clickable",Search button is visible and enabled in the chat header,Automated,
+TC-SEARCH-002,Search,High,Functional,Click opens search modal with title and initial view,"Verify clicking the search button opens the full-screen search modal with correct title and initial state","User is in a 1:1 chat","1. Click the header Search button
+2. Verify search modal opens
+3. Verify title reads 'Search Messages'
+4. Verify 'Start Your Search' initial view is shown
+5. Close the modal",Search modal opens with 'Search Messages' title and initial view visible,Automated,
+TC-SEARCH-003,Search,Medium,Functional,All 5 filter tabs are visible,"Verify all filter tabs are displayed when search modal is opened","User is in a 1:1 chat","1. Click header Search button
+2. Verify filter tab 'Audio' is visible
+3. Verify filter tab 'Documents' is visible
+4. Verify filter tab 'Photos' is visible
+5. Verify filter tab 'Videos' is visible
+6. Verify filter tab 'Links' is visible
+7. Close the modal",All 5 filter tabs (Audio/Documents/Photos/Videos/Links) are visible,Automated,
+TC-SEARCH-004,Search,High,Functional,Typing a known keyword returns matching results,"Verify typing a searchable keyword filters and returns at least one matching message","Chat has at least one message containing the keyword","1. Open search modal
+2. Type a known keyword in the search input
+3. Wait for results to render
+4. Verify at least 1 result is displayed
+5. Verify result subtitle contains the keyword text
+6. Close the modal",Results list shows ≥1 message whose subtitle contains the keyword,Automated,
+TC-SEARCH-005,Search,Medium,Functional,Search is case-insensitive,"Verify searching in uppercase matches messages stored in mixed case","Chat has a message 'Hello World case check'","1. Open search modal
+2. Type 'HELLO WORLD' (uppercase) in search input
+3. Wait for results
+4. Verify at least 1 result is displayed
+5. Verify result contains 'Hello World' (mixed case)
+6. Close the modal",Uppercase keyword matches mixed-case message; case-insensitive,Automated,
+TC-SEARCH-006,Search,Medium,Functional,Partial word matching works,"Verify a substring of a keyword still returns the full message","Chat has a message with the unique keyword","1. Open search modal
+2. Type first 7 characters of the keyword
+3. Wait for results
+4. Verify at least 1 result is displayed
+5. Verify result subtitle contains the full keyword
+6. Close the modal",Partial keyword returns messages containing the full keyword,Automated,
+TC-SEARCH-007,Search,High,Negative,Non-existent keyword shows empty state,"Verify searching for a keyword with no matches displays the empty state","User is in a 1:1 chat","1. Open search modal
+2. Type a random non-existent keyword (e.g. 'zzz_xx_nonexistent_99999')
+3. Wait for search to resolve
+4. Verify 'No Results' empty view is shown
+5. Verify empty description contains 'couldn't find'
+6. Verify result count is 0
+7. Close the modal",'No Results' empty state is shown with description; 0 results rendered,Automated,
+TC-SEARCH-008,Search,Medium,Functional,Clear button resets input and returns to initial view,"Verify the clear button empties the input and restores the initial view","Search modal has results from a typed keyword","1. Open search modal
+2. Type a keyword to trigger results
+3. Verify results appear
+4. Verify clear button is visible
+5. Click the clear button
+6. Verify input value is empty
+7. Verify 'Start Your Search' initial view is shown
+8. Close the modal",Input becomes empty and initial view is restored,Automated,
+TC-SEARCH-009,Search,Medium,Functional,Filter tabs filter results correctly for text-only chat,"Verify each filter tab shows empty state when the chat has only text messages","Chat has only text messages matching the keyword","1. Open search modal
+2. Type the known keyword
+3. Verify at least 1 result appears
+4. Click 'Audio' filter — verify empty state
+5. Reopen search and repeat for 'Documents' — verify empty
+6. Reopen search and repeat for 'Photos' — verify empty
+7. Reopen search and repeat for 'Videos' — verify empty
+8. Reopen search and repeat for 'Links' — verify empty","Each media filter shows empty state since chat contains only text",Automated,"UIKit hides sibling filters once one is selected — modal is reopened per filter"
+TC-SEARCH-010,Search,Medium,Functional,Typing then manually clearing restores initial view,"Verify manually emptying the input (without clear button) returns initial view","Search modal is open with results","1. Open search modal
+2. Type the known keyword
+3. Verify results appear
+4. Manually clear the input via keyboard (fill with '')
+5. Wait for state update
+6. Verify 'Start Your Search' initial view is restored
+7. Close the modal",Manual clearing of input restores the initial view,Automated,
+TC-SEARCH-011,Search,High,Functional,Close button hides search modal,"Verify clicking the close button exits the search and returns to the chat","Search modal is open","1. Open search modal
+2. Verify close button is visible
+3. Click the close button
+4. Verify search modal is no longer visible
+5. Verify message composer is visible and interactive",Search modal closes and chat composer is back,Automated,
+TC-SEARCH-012,Search,Low,Negative,Empty keyword shows initial view not empty state,"Verify opening search with no input shows initial view rather than empty results","User is in a 1:1 chat","1. Open search modal
+2. Verify input is empty
+3. Verify 'Start Your Search' initial view is shown
+4. Verify 'No Results' empty view is NOT shown
+5. Close the modal",Initial view is shown; empty state is NOT shown when input is empty,Automated,
+,,,,,,,,,,
+,,,,"═══ GROUP CHAT — MESSAGE SEARCH ═══",,,,,,
+TC-SEARCH-013,Search,High,Functional,Group chat search button opens modal,"Verify the search button is present in a group chat and opens the search modal","User is in a freshly created group chat","1. Open a group chat
+2. Verify search button is visible in the header
+3. Click the search button
+4. Verify search modal opens
+5. Verify 'Start Your Search' initial view is shown
+6. Close the modal",Search modal opens in group chat with initial view,Automated,
+TC-SEARCH-014,Search,High,Functional,Keyword match in group returns results,"Verify a known keyword in a group chat returns matching messages","Group chat has messages containing a unique keyword","1. Open search modal in group chat
+2. Type the group keyword
+3. Wait for search indexing (retry up to 30s)
+4. Verify at least 1 result is displayed
+5. Verify result subtitle contains the keyword
+6. Close the modal",Group search returns messages matching the keyword,Automated,"Retries are built-in because group indexing is async"
+TC-SEARCH-015,Search,High,Negative,Non-existent keyword in group shows empty state,"Verify non-existent keyword in group chat triggers empty state","User is in a group chat","1. Open search modal
+2. Type a random non-existent keyword (e.g. 'zzz_group_nonexistent_99999')
+3. Wait for search to resolve
+4. Verify 'No Results' empty state is shown
+5. Verify result count is 0
+6. Close the modal","'No Results' empty state is shown; 0 results rendered",Automated,"Occasionally flaky on fresh groups due to backend index delay"
+TC-SEARCH-016,Search,Medium,Functional,Clear button resets group search,"Verify the clear button works correctly in group chat search","Group chat search has results","1. Open search modal in group
+2. Type the group keyword
+3. Verify results appear
+4. Click the clear button
+5. Verify input is empty
+6. Verify initial view is restored
+7. Close the modal",Input is cleared and initial view is shown,Automated,
+TC-SEARCH-017,Search,Medium,Functional,Filter tabs work in group search,"Verify each filter tab functions in group chat search","Group chat has only text messages","1. Open search modal
+2. Type the group keyword
+3. Verify text results appear
+4. Click 'Audio' filter — verify empty
+5. Reopen and repeat for 'Documents' — verify empty
+6. Reopen and repeat for 'Photos' — verify empty
+7. Reopen and repeat for 'Videos' — verify empty
+8. Reopen and repeat for 'Links' — verify empty",Each filter returns empty state for text-only group,Automated,
+TC-SEARCH-018,Search,High,Functional,Close button exits group search,"Verify the close button works in group chat search and returns to the chat","Group chat search modal is open","1. Open search modal in group
+2. Click the close button
+3. Verify search modal is hidden
+4. Verify group chat composer is visible",Search modal closes and group chat composer is visible,Automated,

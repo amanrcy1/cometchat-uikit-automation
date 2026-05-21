@@ -157,9 +157,28 @@ export const TestConfig = {
     deleteChatAction: SEL.users.deleteChat,
     confirmDialogDeleteButton: SEL.confirm.deleteBtn,
 
-    // Chat search
+    // Chat search (header button + search-view modal + filters + results + empty state)
     chatSearchButton: SEL.chatSearch.button,
+    chatSearchView: SEL.chatSearch.view,
+    chatSearchViewHeader: SEL.chatSearch.viewHeader,
+    chatSearchViewTitle: SEL.chatSearch.viewTitle,
+    chatSearchCloseButton: SEL.chatSearch.closeButton,
     chatSearchInput: SEL.chatSearch.input,
+    chatSearchClearButton: SEL.chatSearch.clearButton,
+    chatSearchInitialView: SEL.chatSearch.initialView,
+    chatSearchInitialTitle: SEL.chatSearch.initialTitle,
+    chatSearchFilters: SEL.chatSearch.filters,
+    chatSearchFilter: SEL.chatSearch.filter,
+    chatSearchFilterActive: SEL.chatSearch.filterActive,
+    chatSearchResults: SEL.chatSearch.results,
+    chatSearchMessagesList: SEL.chatSearch.messagesList,
+    chatSearchResultItem: SEL.chatSearch.resultItem,
+    chatSearchResultSender: SEL.chatSearch.resultSender,
+    chatSearchResultSubtitle: SEL.chatSearch.resultSubtitle,
+    chatSearchResultDate: SEL.chatSearch.resultDate,
+    chatSearchEmptyView: SEL.chatSearch.emptyView,
+    chatSearchEmptyTitle: SEL.chatSearch.emptyTitle,
+    chatSearchEmptyDescription: SEL.chatSearch.emptyDescription,
 
     // Message info
     messageInfoPanel: SEL.msgInfo.panel,

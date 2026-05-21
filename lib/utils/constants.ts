@@ -207,10 +207,43 @@ export const SEL = {
     voiceRecord: sel('thread-voice-record-btn', 'div.cometchat-threaded-message button.cometchat-button[title="Voice Recording"]'),
   },
 
-  // Chat search
+  // Chat search (header button + full-screen search view modal)
   chatSearch: {
+    // Header trigger
     button: sel('chat-search-btn', 'button.cometchat-button[title="Search"]'),
-    input: sel('chat-search-input', 'input.cometchat-search-bar__input'),
+
+    // Full-screen modal
+    view: sel('chat-search-view', 'div.cometchat-search-view'),
+    viewHeader: sel('chat-search-view-header', 'div.cometchat-search-view__header'),
+    viewTitle: sel('chat-search-view-title', 'div.cometchat-search-view__title'),
+    closeButton: sel('chat-search-close', 'div.cometchat-search-view__close-button button'),
+
+    // Search input + clear
+    input: sel('chat-search-input', 'div.cometchat-search__input input'),
+    clearButton: sel('chat-search-clear', 'div.cometchat-search__input-clear-button'),
+
+    // Initial view (before typing)
+    initialView: sel('chat-search-initial', 'div.cometchat-search__initial-view'),
+    initialTitle: sel('chat-search-initial-title', 'span.cometchat-search__initial-view-title'),
+
+    // Filter tabs
+    filters: sel('chat-search-filters', 'div.cometchat-search__body-filters'),
+    filter: (name: 'Audio' | 'Documents' | 'Photos' | 'Videos' | 'Links') =>
+      `[data-testid="chat-search-filter-${name.toLowerCase()}"], div.cometchat-search__body-filter:has-text("${name}")`,
+    filterActive: sel('chat-search-filter-active', 'div.cometchat-search__body-filter[class*="active"]'),
+
+    // Results
+    results: sel('chat-search-results', 'div.cometchat-search__results'),
+    messagesList: sel('chat-search-messages', 'div.cometchat-search__messages'),
+    resultItem: sel('chat-search-result-item', 'div.cometchat-search-messages__list-item'),
+    resultSender: sel('chat-search-result-sender', 'div.cometchat-search-messages__list-item .cometchat-list-item__body-title'),
+    resultSubtitle: sel('chat-search-result-subtitle', 'div.cometchat-search-messages__list-item .cometchat-list-item__body-subtitle'),
+    resultDate: sel('chat-search-result-date', 'div.cometchat-search-messages__list-item .cometchat-list-item__trailing-view'),
+
+    // Empty state
+    emptyView: sel('chat-search-empty', 'div.cometchat-search__empty-view'),
+    emptyTitle: sel('chat-search-empty-title', 'div.cometchat-search__empty-view-body-title'),
+    emptyDescription: sel('chat-search-empty-desc', 'div.cometchat-search__empty-view-body-description'),
   },
 
   // Message list

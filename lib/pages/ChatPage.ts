@@ -145,4 +145,16 @@ export class ChatPage {
   async openChatSearch() { await this.details.openChatSearch(); }
   async searchInChat(keyword: string) { await this.details.searchInChat(keyword); }
   async closeChatSearch() { await this.details.closeChatSearch(); }
+  async verifySearchViewVisible() { await this.details.verifySearchViewVisible(); }
+  async verifySearchInitialState() { await this.details.verifySearchInitialState(); }
+  async verifySearchFiltersVisible() { await this.details.verifySearchFiltersVisible(); }
+  async typeSearchKeyword(keyword: string) { await this.details.typeSearchKeyword(keyword); }
+  async waitForSearchResolved(timeout?: number) { await this.details.waitForSearchResolved(timeout); }
+  async verifySearchHasResults(minCount?: number, keyword?: string) { await this.details.verifySearchHasResults(minCount, keyword); }
+  async getSearchResultCount() { return this.details.getSearchResultCount(); }
+  async verifyResultContainsText(text: string) { await this.details.verifyResultContainsText(text); }
+  async verifySearchEmptyState() { await this.details.verifySearchEmptyState(); }
+  async selectSearchFilter(filter: 'Audio' | 'Documents' | 'Photos' | 'Videos' | 'Links') { await this.details.selectSearchFilter(filter); }
+  async clearSearchViaButton() { await this.details.clearSearchViaButton(); }
+  async verifySearchInputValue(expected: string) { await this.details.verifySearchInputValue(expected); }
 }

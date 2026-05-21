@@ -62,40 +62,132 @@ export class ChatDetailsPage extends ChatBasePage {
     await this.page.waitForTimeout(1000);
   }
 
-  // ─── Search ───
+  // ─── Search (full-screen search-view modal) ───
 
   async openChatSearch() {
-    const searchBtn = this.page.locator(selectors.chatSearchButton);
+    await this.dismissErrorOverlay();
+    const searchBtn = this.page.locator(selectors.chatSearchButton).first();
     await expect(searchBtn).toBeVisible({ timeout: timeouts.chatOpen });
-    await searchBtn.click();
-    await this.page.waitForTimeout(1000);
+    await searchBtn.click({ force: true });
+    // Search view modal opens
+    await expect(this.page.locator(selectors.chatSearchView)).toBeVisible({ timeout: timeouts.chatOpen });
+    await expect(this.page.locator(selectors.chatSearchViewTitle)).toHaveText('Search Messages', { timeout: timeouts.chatOpen });
+  }
+
+  async verifySearchViewVisible() {
+    await expect(this.page.locator(selectors.chatSearchView)).toBeVisible({ timeout: timeouts.chatOpen });
+  }
+
+  async verifySearchInitialState() {
+    await expect(this.page.locator(selectors.chatSearchInitialView)).toBeVisible({ timeout: timeouts.chatOpen });
+    await expect(this.page.locator(selectors.chatSearchInitialTitle)).toHaveText('Start Your Search', { timeout: timeouts.chatOpen });
+  }
+
+  async verifySearchFiltersVisible() {
+    const filters: Array<'Audio' | 'Documents' | 'Photos' | 'Videos' | 'Links'> =
+      ['Audio', 'Documents', 'Photos', 'Videos', 'Links'];
+    for (const f of filters) {
+      await expect(this.page.locator(selectors.chatSearchFilter(f)).first()).toBeVisible({ timeout: timeouts.chatOpen });
+    }
+  }
+
+  async typeSearchKeyword(keyword: string) {
+    const input = this.page.locator(selectors.chatSearchInput).first();
+    await expect(input).toBeVisible({ timeout: timeouts.chatOpen });
+    await input.fill(keyword);
+    // Debounced search — wait for either results or empty view to appear
+    await this.page.waitForTimeout(1500);
   }
 
   async searchInChat(keyword: string) {
     await this.openChatSearch();
-    const searchInput = this.page.locator(selectors.chatSearchInput).last();
-    await expect(searchInput).toBeVisible({ timeout: timeouts.chatOpen });
-    await searchInput.fill(keyword);
+    await this.typeSearchKeyword(keyword);
+  }
+
+  /** Wait until at least one result is rendered OR empty view appears. */
+  async waitForSearchResolved(timeout: number = timeouts.chatOpen) {
+    await expect(async () => {
+      const hasResults = await this.page.locator(selectors.chatSearchResultItem).first().isVisible().catch(() => false);
+      const isEmpty = await this.page.locator(selectors.chatSearchEmptyView).isVisible().catch(() => false);
+      expect(hasResults || isEmpty).toBeTruthy();
+    }).toPass({ timeout });
+  }
+
+  /**
+   * CometChat search indexing is async — newly sent messages can take several seconds
+   * to appear in search results. This method re-types the keyword (which re-fires the
+   * search request) on each poll iteration until results appear.
+   */
+  async waitForSearchResultsWithRetry(keyword: string, timeout: number = 30_000) {
+    const input = this.page.locator(selectors.chatSearchInput).first();
+    await expect(async () => {
+      // Re-type to trigger a fresh search
+      await input.fill('').catch(() => {});
+      await this.page.waitForTimeout(300);
+      await input.fill(keyword).catch(() => {});
+      await this.page.waitForTimeout(2000);
+      const count = await this.page.locator(selectors.chatSearchResultItem).count();
+      expect(count).toBeGreaterThanOrEqual(1);
+    }).toPass({ timeout, intervals: [2000, 3000, 4000, 5000] });
+  }
+
+  async verifySearchHasResults(minCount: number = 1, keyword?: string) {
+    if (keyword) {
+      await this.waitForSearchResultsWithRetry(keyword);
+    } else {
+      await this.waitForSearchResolved();
+    }
+    const count = await this.page.locator(selectors.chatSearchResultItem).count();
+    expect(count).toBeGreaterThanOrEqual(minCount);
+  }
+
+  async getSearchResultCount(): Promise<number> {
+    return this.page.locator(selectors.chatSearchResultItem).count();
+  }
+
+  async verifyResultContainsText(text: string) {
+    await this.waitForSearchResolved();
+    const subtitle = this.page.locator(selectors.chatSearchResultSubtitle, { hasText: text }).first();
+    await expect(subtitle).toBeVisible({ timeout: timeouts.chatOpen });
+  }
+
+  async verifySearchEmptyState() {
+    await this.waitForSearchResolved();
+    await expect(this.page.locator(selectors.chatSearchEmptyView)).toBeVisible({ timeout: timeouts.chatOpen });
+    await expect(this.page.locator(selectors.chatSearchEmptyTitle)).toHaveText('No Results', { timeout: timeouts.chatOpen });
+  }
+
+  async selectSearchFilter(filter: 'Audio' | 'Documents' | 'Photos' | 'Videos' | 'Links') {
+    const tab = this.page.locator(selectors.chatSearchFilter(filter)).first();
+    await expect(tab).toBeVisible({ timeout: timeouts.chatOpen });
+    await tab.click({ force: true });
     await this.page.waitForTimeout(1500);
   }
 
-  async closeChatSearch() {
-    const searchInput = this.page.locator(selectors.chatSearchInput).last();
-    if (await searchInput.isVisible({ timeout: 1000 }).catch(() => false)) {
-      await searchInput.clear();
-      await this.page.waitForTimeout(300);
-    }
-    await this.page.keyboard.press('Escape');
+  async clearSearchViaButton() {
+    const clearBtn = this.page.locator(selectors.chatSearchClearButton).first();
+    await expect(clearBtn).toBeVisible({ timeout: timeouts.chatOpen });
+    await clearBtn.click({ force: true });
     await this.page.waitForTimeout(500);
-    for (const sel of [selectors.usersSearchInput, selectors.groupsSearchInput, selectors.conversationSearchInput]) {
-      const sidebarSearch = this.page.locator(sel);
-      if (await sidebarSearch.isVisible({ timeout: 1000 }).catch(() => false)) {
-        const value = await sidebarSearch.inputValue().catch(() => '');
-        if (value) {
-          await sidebarSearch.clear();
-          await this.page.waitForTimeout(300);
-        }
-      }
+    // Input should be empty
+    const input = this.page.locator(selectors.chatSearchInput).first();
+    await expect(input).toHaveValue('', { timeout: timeouts.attachMenu });
+  }
+
+  async verifySearchInputValue(expected: string) {
+    const input = this.page.locator(selectors.chatSearchInput).first();
+    await expect(input).toHaveValue(expected, { timeout: timeouts.chatOpen });
+  }
+
+  async closeChatSearch() {
+    const searchView = this.page.locator(selectors.chatSearchView);
+    if (!(await searchView.isVisible({ timeout: 1000 }).catch(() => false))) return;
+    const closeBtn = this.page.locator(selectors.chatSearchCloseButton).first();
+    if (await closeBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await closeBtn.click({ force: true });
+    } else {
+      await this.page.keyboard.press('Escape');
     }
+    await expect(searchView).not.toBeVisible({ timeout: timeouts.chatOpen });
   }
 }
