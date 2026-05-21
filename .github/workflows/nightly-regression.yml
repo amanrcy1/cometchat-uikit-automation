@@ -16,17 +16,8 @@
 name: Nightly Regression
 
 on:
-  # Disabled — tests require localhost:3000 which is not available in CI
-  # schedule:
-  #   - cron: '0 2 * * *'
-
-  workflow_dispatch:
-    inputs:
-      capture_all:
-        description: 'Capture video/trace for ALL tests (not just failures)'
-        required: false
-        default: 'true'
-        type: boolean
+  # All triggers disabled — tests require localhost:3000 not available in CI
+  workflow_dispatch: {}
 
 concurrency:
   group: nightly-regression

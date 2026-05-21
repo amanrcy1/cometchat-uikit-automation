@@ -20,45 +20,8 @@
 name: E2E Test Suite
 
 on:
-  # Disabled — tests require localhost:3000 which is not available in CI
-  # push:
-  #   branches: [main, develop]
-  # pull_request:
-  #   branches: [main, develop]
-  # schedule:
-  #   - cron: '0 6 * * 1-5'
-
-  # Manual trigger with options
-  workflow_dispatch:
-    inputs:
-      test_layer:
-        description: 'Test layer to run'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-          - all
-          - ui
-          - api
-          - integration
-      test_tag:
-        description: 'Tag filter (e.g. @smoke, @sanity, @chat, @media)'
-        required: false
-        default: ''
-        type: string
-      base_url:
-        description: 'App URL to test against'
-        required: false
-        default: 'http://localhost:3000'
-      retries:
-        description: 'Number of retries for flaky tests'
-        required: false
-        default: '2'
-      debug:
-        description: 'Enable debug logging'
-        required: false
-        default: 'false'
-        type: boolean
+  # All triggers disabled — tests require localhost:3000 not available in CI
+  workflow_dispatch: {}
 
 # Cancel in-progress runs for the same branch/PR
 concurrency:

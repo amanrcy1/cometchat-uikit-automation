@@ -13,9 +13,8 @@
 name: PR Quality Gate
 
 on:
-  # Disabled — tests require localhost:3000 which is not available in CI
-  # pull_request:
-  #   branches: [main, develop]
+  # All triggers disabled — tests require localhost:3000 not available in CI
+  workflow_dispatch: {}
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}
