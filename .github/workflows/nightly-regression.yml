@@ -16,8 +16,9 @@
 name: Nightly Regression
 
 on:
-  schedule:
-    - cron: '0 2 * * *'  # Every day at 2 AM UTC
+  # Disabled — tests require localhost:3000 which is not available in CI
+  # schedule:
+  #   - cron: '0 2 * * *'
 
   workflow_dispatch:
     inputs:
